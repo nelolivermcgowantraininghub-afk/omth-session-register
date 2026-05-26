@@ -1,0 +1,2006 @@
+{
+  "sessions": [
+    {
+      "date": "19 May 2026",
+      "day": "Tue",
+      "site": "Royal London",
+      "room": "Seminar Room 6",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "26 May 2026",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "Maria Barrett",
+      "autExpert": "Wasim Irani",
+      "trainer": "Jody & Bili",
+      "status": "keep"
+    },
+    {
+      "date": "27 May 2026",
+      "day": "Wed",
+      "site": "Homerton",
+      "room": "Costeloe Lecture Theatre",
+      "ldExpert": "Diyar Huseyinoglu",
+      "autExpert": "Umer Qureshi",
+      "trainer": "Jody & Bili",
+      "status": "keep"
+    },
+    {
+      "date": "01 June 2026",
+      "day": "Mon",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "Lee Adiele",
+      "autExpert": "Hannah Lees",
+      "trainer": "Jody & Bili",
+      "status": "keep"
+    },
+    {
+      "date": "08 June 2026",
+      "day": "Mon",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "Gurpreet Lal",
+      "autExpert": "Wasim Irani",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "09 June 2026",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "Izzet Akkaya",
+      "autExpert": "Wasim Irani",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "12 June 2026",
+      "day": "Fri",
+      "site": "Homerton",
+      "room": "Costeloe Lecture Theatre",
+      "ldExpert": "Connor Chana",
+      "autExpert": "Irene Frischknecht",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "15 June 2026",
+      "day": "Mon",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "Diyar Huseyinoglu",
+      "autExpert": "Ameera Patel",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "17 June 2026",
+      "day": "Wed",
+      "site": "Homerton",
+      "room": "Classroom 4 & 5",
+      "ldExpert": "Mahdi Muhith",
+      "autExpert": "Cass Marshall",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "22 June 2026",
+      "day": "Mon",
+      "site": "Homerton",
+      "room": "Costeloe Lecture Theatre",
+      "ldExpert": "Lee Adiele",
+      "autExpert": "Hannah Lees",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "22 June 2026",
+      "day": "Mon",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "Connor Chana",
+      "autExpert": "Matthew Quinn",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "22 June 2026",
+      "day": "Mon",
+      "site": "Royal London",
+      "room": "Seminar Room 6",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "23 June 2026",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "Izzet Akkaya",
+      "autExpert": "Cass Marshall",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "25 June 2026",
+      "day": "Thu",
+      "site": "Royal London",
+      "room": "Seminar Room 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "29 June 2026",
+      "day": "Mon",
+      "site": "Homerton",
+      "room": "Costeloe Lecture Theatre",
+      "ldExpert": "Mahdi Muhith",
+      "autExpert": "Irene Frischknecht",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "29 June 2026",
+      "day": "Mon",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "Gurpreet Lal",
+      "autExpert": "Angelina Bou-Chedid",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "30 June 2026",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "Peter Allum",
+      "autExpert": "Suresh Singh",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "01 July 2026",
+      "day": "Wed",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "Izzet Akkaya",
+      "autExpert": "Ameera Patel",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "03 July 2026",
+      "day": "Fri",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "Connor Chana",
+      "autExpert": "Umer Qureshi",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "06 July 2026",
+      "day": "Mon",
+      "site": "Royal London",
+      "room": "Seminar Room 5",
+      "ldExpert": "Gurpreet Lal",
+      "autExpert": "Hannah Lees",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "06 July 2026",
+      "day": "Mon",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "Mahdi Muhith",
+      "autExpert": "Matthew Quinn",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "07 July 2026",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Costeloe Lecture Theatre",
+      "ldExpert": "Connor Chana",
+      "autExpert": "Angelina Bou-Chedid",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "13 July 2026",
+      "day": "Mon",
+      "site": "Homerton",
+      "room": "Costeloe Lecture Theatre",
+      "ldExpert": "Lee Adiele",
+      "autExpert": "Suresh Singh",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "13 July 2026",
+      "day": "Mon",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "Peter Allum",
+      "autExpert": "Matthew Quinn",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "14 July 2026",
+      "day": "Tue",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "Umer Qureshi",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "14 July 2026",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "Maria Barrett",
+      "autExpert": "Ameera Patel",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "16 July 2026",
+      "day": "Thu",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "20 July 2026",
+      "day": "Mon",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "21 July 2026",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Costeloe Lecture Theatre",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "22 July 2026",
+      "day": "Wed",
+      "site": "Royal London",
+      "room": "Seminar Room 6",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "27 July 2026",
+      "day": "Mon",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "Irene Frischknecht",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "28 July 2026",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "Suresh Singh",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "30 July 2026",
+      "day": "Thu",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "Irene Frischknecht",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "31 July 2026",
+      "day": "Fri",
+      "site": "Royal London",
+      "room": "Seminar Room 6",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "03 August 2026",
+      "day": "Mon",
+      "site": "Royal London",
+      "room": "Seminar Room 6",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "03 August 2026",
+      "day": "Mon",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "04 August 2026",
+      "day": "Tue",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "06 August 2026",
+      "day": "Thu",
+      "site": "Royal London",
+      "room": "Seminar Room 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "07 August 2026",
+      "day": "Fri",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "10 August 2026",
+      "day": "Mon",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "10 August 2026",
+      "day": "Mon",
+      "site": "Royal London",
+      "room": "Seminar Room 6",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "11 August 2026",
+      "day": "Tue",
+      "site": "Royal London",
+      "room": "Seminar Room 6",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "12 August 2026",
+      "day": "Wed",
+      "site": "Royal London",
+      "room": "Seminar Room 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "17 August 2026",
+      "day": "Mon",
+      "site": "Royal London",
+      "room": "Seminar Room 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "18 August 2026",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Costeloe Lecture Theatre",
+      "ldExpert": "Maria Barrett",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "19 August 2026",
+      "day": "Wed",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "21 August 2026",
+      "day": "Fri",
+      "site": "Royal London",
+      "room": "Seminar Room 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "24 August 2026",
+      "day": "Mon",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "25 August 2026",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "25 August 2026",
+      "day": "Tue",
+      "site": "Royal London",
+      "room": "Seminar Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "25 August 2026",
+      "day": "Tue",
+      "site": "Royal London",
+      "room": "Seminar Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "26 August 2026",
+      "day": "Wed",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "01 September 2026",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "01 September 2026",
+      "day": "Tue",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "02 September 2026",
+      "day": "Wed",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "03 September 2026",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "03 September 2026",
+      "day": "Thu",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "04 September 2026",
+      "day": "Fri",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "08 September 2026",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "09 September 2026",
+      "day": "Wed",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "09 September 2026",
+      "day": "Wed",
+      "site": "Homerton",
+      "room": "Classroom 4 & 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "11 September 2026",
+      "day": "Fri",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "15 September 2026",
+      "day": "Tue",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "15 September 2026",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "16 September 2026",
+      "day": "Wed",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "16 September 2026",
+      "day": "Wed",
+      "site": "Homerton",
+      "room": "Classroom 4 & 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "17 September 2026",
+      "day": "Thu",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "18 September 2026",
+      "day": "Fri",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "22 September 2026",
+      "day": "Tue",
+      "site": "Royal London",
+      "room": "Seminar Room 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "23 September 2026",
+      "day": "Wed",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "23 September 2026",
+      "day": "Wed",
+      "site": "Homerton",
+      "room": "Classroom 4 & 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "24 September 2026",
+      "day": "Thu",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "24 September 2026",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "25 September 2026",
+      "day": "Fri",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "28 September 2026",
+      "day": "Mon",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "30 September 2026",
+      "day": "Wed",
+      "site": "Homerton",
+      "room": "Classroom 4 & 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "01 October 2026",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "05 October 2026",
+      "day": "Mon",
+      "site": "Royal London",
+      "room": "Seminar Room 6",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "06 October 2026",
+      "day": "Tue",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "06 October 2026",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "07 October 2026",
+      "day": "Wed",
+      "site": "Homerton",
+      "room": "Classroom 4 & 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "08 October 2026",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "08 October 2026",
+      "day": "Thu",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "09 October 2026",
+      "day": "Fri",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "13 October 2026",
+      "day": "Tue",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "14 October 2026",
+      "day": "Wed",
+      "site": "Homerton",
+      "room": "Classroom 4 & 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "14 October 2026",
+      "day": "Wed",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "15 October 2026",
+      "day": "Thu",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "15 October 2026",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "20 October 2026",
+      "day": "Tue",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "20 October 2026",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "21 October 2026",
+      "day": "Wed",
+      "site": "Homerton",
+      "room": "Classroom 4 & 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "22 October 2026",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "22 October 2026",
+      "day": "Thu",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "23 October 2026",
+      "day": "Fri",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "27 October 2026",
+      "day": "Tue",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "27 October 2026",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "27 October 2026",
+      "day": "Tue",
+      "site": "Newham",
+      "room": "LectureTheat 2B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "28 October 2026",
+      "day": "Wed",
+      "site": "Homerton",
+      "room": "Classroom 4 & 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "28 October 2026",
+      "day": "Wed",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "29 October 2026",
+      "day": "Thu",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "29 October 2026",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "02 November 2026",
+      "day": "Mon",
+      "site": "Royal London",
+      "room": "Seminar Room 6",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "02 November 2026",
+      "day": "Mon",
+      "site": "Royal London",
+      "room": "Seminar Room 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "03 November 2026",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "03 November 2026",
+      "day": "Tue",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "04 November 2026",
+      "day": "Wed",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "04 November 2026",
+      "day": "Wed",
+      "site": "Homerton",
+      "room": "Classroom 4 & 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "04 November 2026",
+      "day": "Wed",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "05 November 2026",
+      "day": "Thu",
+      "site": "Royal London",
+      "room": "Seminar Room 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "06 November 2026",
+      "day": "Fri",
+      "site": "Royal London",
+      "room": "Seminar Room 6",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "06 November 2026",
+      "day": "Fri",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "09 November 2026",
+      "day": "Mon",
+      "site": "Newham",
+      "room": "LectureTheat 2B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "10 November 2026",
+      "day": "Tue",
+      "site": "Newham",
+      "room": "LectureTheat 2B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "10 November 2026",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "11 November 2026",
+      "day": "Wed",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "11 November 2026",
+      "day": "Wed",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "11 November 2026",
+      "day": "Wed",
+      "site": "Homerton",
+      "room": "Classroom 4 & 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "13 November 2026",
+      "day": "Fri",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "16 November 2026",
+      "day": "Mon",
+      "site": "Royal London",
+      "room": "Seminar Room 6",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "18 November 2026",
+      "day": "Wed",
+      "site": "Homerton",
+      "room": "Classroom 4 & 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "18 November 2026",
+      "day": "Wed",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "19 November 2026",
+      "day": "Thu",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "19 November 2026",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "20 November 2026",
+      "day": "Fri",
+      "site": "Royal London",
+      "room": "Seminar Room 6",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "20 November 2026",
+      "day": "Fri",
+      "site": "Royal London",
+      "room": "Seminar Room 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "20 November 2026",
+      "day": "Fri",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "23 November 2026",
+      "day": "Mon",
+      "site": "Royal London",
+      "room": "Seminar Room 6",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "27 November 2026",
+      "day": "Fri",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "30 November 2026",
+      "day": "Mon",
+      "site": "Royal London",
+      "room": "Seminar Room 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "01 December 2026",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "02 December 2026",
+      "day": "Wed",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "02 December 2026",
+      "day": "Wed",
+      "site": "Homerton",
+      "room": "Classroom 4 & 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "03 December 2026",
+      "day": "Thu",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "08 December 2026",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "09 December 2026",
+      "day": "Wed",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "09 December 2026",
+      "day": "Wed",
+      "site": "Homerton",
+      "room": "Classroom 4 & 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "09 December 2026",
+      "day": "Wed",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "10 December 2026",
+      "day": "Thu",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "10 December 2026",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "11 December 2026",
+      "day": "Fri",
+      "site": "Royal London",
+      "room": "Seminar Room 6",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "14 December 2026",
+      "day": "Mon",
+      "site": "Royal London",
+      "room": "Seminar Room 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "15 December 2026",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "16 December 2026",
+      "day": "Wed",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "17 December 2026",
+      "day": "Thu",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "17 December 2026",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "18 December 2026",
+      "day": "Fri",
+      "site": "Royal London",
+      "room": "Seminar Room 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "18 December 2026",
+      "day": "Fri",
+      "site": "Royal London",
+      "room": "Seminar Room 6",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "18 December 2026",
+      "day": "Fri",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "21 December 2026",
+      "day": "Mon",
+      "site": "Royal London",
+      "room": "Seminar Room 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "21 December 2026",
+      "day": "Mon",
+      "site": "Royal London",
+      "room": "Seminar Room 6",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "22 December 2026",
+      "day": "Tue",
+      "site": "Mile End",
+      "room": "Room 5A/5B",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "22 December 2026",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Jody",
+      "status": "keep"
+    },
+    {
+      "date": "22 December 2026",
+      "day": "Tue",
+      "site": "Royal London",
+      "room": "Seminar Room 5",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "Bili",
+      "status": "keep"
+    },
+    {
+      "date": "22 December 2026",
+      "day": "Tue",
+      "site": "Royal London",
+      "room": "Seminar Room 6",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "07 January 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "12 January 2027",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "14 January 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "21 January 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "04 February 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "09 February 2027",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "18 February 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "02 March 2027",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "04 March 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "23 March 2027",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "25 March 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "30 March 2027",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "01 April 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "06 April 2027",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "08 April 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "15 April 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "22 April 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "27 April 2027",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "29 April 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "04 May 2027",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "06 May 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "11 May 2027",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "13 May 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "20 May 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "25 May 2027",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "01 June 2027",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "10 June 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "17 June 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "22 June 2027",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "29 June 2027",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "01 July 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "08 July 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "13 July 2027",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "15 July 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "22 July 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "27 July 2027",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "29 July 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "05 August 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "10 August 2027",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "12 August 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "19 August 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "24 August 2027",
+      "day": "Tue",
+      "site": "Homerton",
+      "room": "Conference Room 1",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    },
+    {
+      "date": "26 August 2027",
+      "day": "Thu",
+      "site": "Homerton",
+      "room": "Conference Room 2",
+      "ldExpert": "",
+      "autExpert": "",
+      "trainer": "TBC",
+      "status": "keep"
+    }
+  ],
+  "autismExperts": [
+    "Ameera Patel",
+    "Angelina Bou-Chedid",
+    "Cass Marshall",
+    "Hannah Lees",
+    "Irene Frischknecht",
+    "Matthew Quinn",
+    "Suresh Singh",
+    "Umer Qureshi",
+    "Wasim Irani"
+  ],
+  "ldExperts": [
+    "Connor Chana",
+    "Diyar Huseyinoglu",
+    "Gurpreet Lal",
+    "Izzet Akkaya",
+    "Lee Adiele",
+    "Mahdi Muhith",
+    "Maria Barrett",
+    "Peter Allum"
+  ],
+  "lastUpdated": "2026-05-26T00:00:00.000Z"
+}
