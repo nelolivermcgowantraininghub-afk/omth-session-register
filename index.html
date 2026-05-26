@@ -299,7 +299,7 @@ th.sorted.desc .sort-arrow::after{content:'↓'}
 
     <div class="sync-section">
       <div class="section-label">Cloud Sync</div>
-      <div class="sync-info">Syncs to <span>JSONbin</span> after every change. Team members see latest on reload.</div>
+      <div class="sync-info">Syncs to <span style="color:var(--accent-green);font-family:monospace">GitHub</span> after every change (JSONbin as backup). Team members see latest on reload.</div>
       <button class="btn btn-secondary" onclick="loadFromCloud()">&#8595; Load from Cloud</button>
       <button class="btn btn-danger" onclick="clearAll()">&#10005; Clear All Sessions</button>
     </div>
@@ -1126,40 +1126,45 @@ async function saveToGitHub(){
     const json=await res.json();
     _ghFileSha=json.content.sha;
     return true;
-  }catch(e){console.warn('GitHub sync failed',e);return false;}
+  }catch(e){console.warn('GitHub save failed',e);return false;}
 }
 async function loadFromGitHub(){
   try{
-    const res=await fetch(GH_API,{headers:{'Authorization':'token '+GH_TOKEN}});
+    const res=await fetch(GH_API,{headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json'}});
     if(!res.ok)return null;
     const json=await res.json();
     _ghFileSha=json.sha;
-    const decoded=decodeURIComponent(escape(atob(json.content.replace(/
-/g,''))));
+    const decoded=decodeURIComponent(escape(atob(json.content.replace(/\n/g,''))));
     return JSON.parse(decoded);
   }catch(e){console.warn('GitHub load failed',e);return null;}
 }
 async function saveToCloud(){
   setSyncStatus('syncing','Syncing…');
-  let saved=false;
-  // Try GitHub first
-  saved=await saveToGitHub();
-  if(saved){
-    setSyncStatus('synced','Synced '+new Date().toLocaleTimeString('en-GB'));
+  const ghOk=await saveToGitHub();
+  if(ghOk){
+    setSyncStatus('synced','Synced ✓ GitHub '+new Date().toLocaleTimeString('en-GB'));
     syncToSheets();
     return;
   }
-  // Fallback to JSONbin
   try{
     const res=await fetch(BIN_URL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':MASTER_KEY},body:JSON.stringify({sessions:data,autismExperts:AUTISM_EXPERTS,ldExperts:LD_EXPERTS,lastUpdated:new Date().toISOString()})});
     if(!res.ok)throw new Error();
-    setSyncStatus('synced','Synced (fallback) '+new Date().toLocaleTimeString('en-GB'));
+    setSyncStatus('synced','Synced ✓ Backup '+new Date().toLocaleTimeString('en-GB'));
     syncToSheets();
-  }catch(e){setSyncStatus('error','Sync failed');toast('Cloud sync failed','error');}
+  }catch(e){setSyncStatus('error','Sync failed');toast('Both sync services unavailable','error');}
 }
 async function loadFromCloud(){
   setSyncStatus('syncing','Loading…');
   try{
+    const ghData=await loadFromGitHub();
+    if(ghData&&ghData.sessions){
+      data=ghData.sessions;
+      if(ghData.autismExperts&&ghData.autismExperts.length)AUTISM_EXPERTS=ghData.autismExperts;
+      if(ghData.ldExperts&&ghData.ldExperts.length)LD_EXPERTS=ghData.ldExperts;
+      updateStats();renderTable();refreshActive();
+      setSyncStatus('synced','Loaded ✓ GitHub '+new Date().toLocaleTimeString('en-GB'));
+      return;
+    }
     const res=await fetch(BIN_URL+'/latest',{headers:{'X-Master-Key':MASTER_KEY}});
     if(!res.ok)throw new Error();
     const json=await res.json();
@@ -1189,14 +1194,13 @@ normalizeAllDates();
   updateStats();renderTable();
   setSyncStatus('synced','Loaded from file');
   try{
-    // Try GitHub first
     const ghData=await loadFromGitHub();
     if(ghData&&ghData.sessions){
       data=ghData.sessions;
       if(ghData.autismExperts&&ghData.autismExperts.length)AUTISM_EXPERTS=ghData.autismExperts;
       if(ghData.ldExperts&&ghData.ldExperts.length)LD_EXPERTS=ghData.ldExperts;
       updateStats();renderTable();refreshActive();
-      setSyncStatus('synced','Loaded '+new Date().toLocaleTimeString('en-GB'));
+      setSyncStatus('synced','Loaded ✓ GitHub '+new Date().toLocaleTimeString('en-GB'));
       return;
     }
     const res=await fetch(BIN_URL+'/latest',{headers:{'X-Master-Key':MASTER_KEY}});
