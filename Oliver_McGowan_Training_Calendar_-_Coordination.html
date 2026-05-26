@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMTH — Training Session Register</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --bg:#0d1117;--surface:#161b22;--surface2:#1c232d;--surface3:#222b38;
+  --border:#2a3441;--border-hi:#3d4f63;
+  --accent:#00c896;--accent-dim:rgba(0,200,150,.12);
+  --warn:#f59e0b;--warn-dim:rgba(245,158,11,.12);
+  --danger:#ef4444;--danger-dim:rgba(239,68,68,.1);
+  --purple:#8b5cf6;--blue:#3b82f6;
+  --text:#e2e8f0;--text-mid:#94a3b8;--text-dim:#4a5568;
+  --mono:'DM Mono',monospace;--display:'Syne',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:13px;min-height:100vh;line-height:1.6}
+#healthIndicator{
+  margin-left:8px;
+  font-weight:600;
+}
+
+tr.bad-date{
+  background: rgba(239,68,68,.12);
+}
+tr.bad-date:hover{
+  background: rgba(239,68,68,.18);
+}
+
+/* Header */
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:13px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-badge{width:32px;height:32px;background:var(--accent);border-radius:7px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:12px;color:#0d1117;flex-shrink:0}
+.logo-text{font-family:var(--display);font-weight:700;font-size:14px}
+.logo-sub{font-size:10px;color:var(--text-mid);letter-spacing:.05em;text-transform:uppercase}
+.sync-pill{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text-mid);padding:5px 11px;background:var(--surface2);border:1px solid var(--border);border-radius:20px}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--text-dim);transition:background .3s}
+.sync-dot.synced{background:var(--accent);box-shadow:0 0 6px var(--accent)}
+.sync-dot.syncing{background:var(--warn);animation:pulse 1s infinite}
+.sync-dot.error{background:var(--danger)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* Nav */
+.nav-tabs{display:flex;gap:2px;padding:0 20px;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto}
+.tab-btn{padding:10px 14px;font-family:var(--mono);font-size:12px;font-weight:500;cursor:pointer;background:none;border:none;color:var(--text-mid);border-bottom:2px solid transparent;transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* Layout */
+.main{display:grid;grid-template-columns:268px 1fr;min-height:calc(100vh - 93px)}
+aside{background:var(--surface);border-right:1px solid var(--border);padding:14px 13px;display:flex;flex-direction:column;gap:13px;overflow-y:auto}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* Sidebar */
+.section-label{font-size:10px;font-weight:500;color:var(--text-dim);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px}
+
+/* Import area - tabbed */
+.import-tabs{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:8px}
+.import-tab{flex:1;padding:6px 8px;font-family:var(--mono);font-size:11px;cursor:pointer;background:none;border:none;color:var(--text-dim);transition:all .15s;text-align:center;letter-spacing:.03em}
+.import-tab.active{background:var(--surface3);color:var(--accent);border-bottom:1px solid var(--accent)}
+.import-panel{display:none}
+.import-panel.active{display:block}
+
+.drop-zone{border:2px dashed var(--border-hi);border-radius:7px;padding:16px 10px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--accent);background:var(--accent-dim)}
+.drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop-icon{font-size:20px;margin-bottom:3px}
+.drop-label{color:var(--text-mid);font-size:11px}
+.drop-label strong{color:var(--accent)}
+.file-selected{display:none;align-items:center;gap:5px;padding:5px 8px;background:var(--accent-dim);border:1px solid rgba(0,200,150,.3);border-radius:5px;font-size:11px;color:var(--accent);margin-top:5px;word-break:break-all}
+
+.btn{width:100%;padding:8px 12px;border-radius:6px;font-family:var(--mono);font-size:12px;font-weight:500;cursor:pointer;border:none;transition:all .15s;letter-spacing:.03em}
+.btn-primary{background:var(--accent);color:#0d1117}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,200,150,.28)}
+.btn-primary:active{transform:translateY(0)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border);margin-bottom:5px}
+.btn-secondary:hover{border-color:var(--border-hi);background:var(--surface3)}
+.btn-danger{background:var(--danger-dim);color:var(--danger);border:1px solid rgba(239,68,68,.3)}
+.btn-danger:hover{background:rgba(239,68,68,.2)}
+.btn-sm{padding:5px 10px;font-size:11px;width:auto;border-radius:5px}
+
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.stat-card{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px;text-align:center}
+.stat-num{font-family:var(--display);font-size:18px;font-weight:800;color:var(--accent);line-height:1}
+.stat-label{font-size:10px;color:var(--text-mid);margin-top:2px;text-transform:uppercase;letter-spacing:.05em}
+
+.sites-list{display:flex;flex-direction:column;gap:3px}
+.site-tag{display:flex;align-items:center;gap:6px;padding:5px 7px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;font-size:11px;color:var(--text-mid)}
+.site-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.site-count{margin-left:auto;color:var(--text-dim);font-size:10px}
+.sync-section{margin-top:auto}
+.sync-info{font-size:11px;color:var(--text-dim);line-height:1.5;padding:7px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:5px;margin-bottom:6px}
+.sync-info span{color:var(--accent)}
+
+/* Register table */
+.content{padding:14px 18px;overflow-x:auto}
+.toolbar{display:flex;align-items:center;gap:7px;margin-bottom:10px;flex-wrap:wrap}
+.toolbar-title{font-family:var(--display);font-size:15px;font-weight:700;margin-right:auto}
+.filter-input{background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:5px 8px;color:var(--text);font-family:var(--mono);font-size:12px;width:140px;transition:border-color .2s}
+.filter-input:focus{outline:none;border-color:var(--accent)}
+.filter-input::placeholder{color:var(--text-dim)}
+.filter-select{background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:5px 7px;color:var(--text);font-family:var(--mono);font-size:12px;cursor:pointer}
+.filter-select:focus{outline:none;border-color:var(--accent)}
+
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead{background:var(--surface2)}
+th{padding:8px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--text-mid);font-weight:500;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{color:var(--text)}
+th.sorted{color:var(--accent)}
+td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:middle;font-size:12px}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--surface2)}
+
+.badge{display:inline-block;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:500;letter-spacing:.05em;text-transform:uppercase}
+.badge-keep{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(0,200,150,.25)}
+.badge-cancelled{background:var(--danger-dim);color:var(--danger);border:1px solid rgba(239,68,68,.25)}
+.badge-completed{background:rgba(59,130,246,.12);color:var(--blue);border:1px solid rgba(59,130,246,.25)}
+.badge-tbc{background:var(--warn-dim);color:var(--warn);border:1px solid rgba(245,158,11,.25)}
+.icon-btn{background:none;border:none;cursor:pointer;font-size:12px;padding:2px 4px;border-radius:4px;transition:background .1s;line-height:1;color:var(--text-dim)}
+.icon-btn:hover{background:var(--accent-dim);color:var(--accent)}
+.icon-btn.del:hover{background:var(--danger-dim);color:var(--danger)}
+.empty-state{padding:40px 20px;text-align:center;color:var(--text-dim)}
+
+/* Overview */
+.ov-wrap{padding:18px 22px;overflow-y:auto;overflow-x:auto;display:flex;flex-direction:column;gap:24px}
+.ov-head{font-family:var(--display);font-size:14px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:10px;padding-bottom:7px;border-bottom:1px solid var(--border)}
+.ov-cards{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px}
+.ov-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;min-width:110px;flex:1}
+.ov-card-num{font-family:var(--display);font-size:24px;font-weight:800;line-height:1}
+.ov-card-label{font-size:11px;color:var(--text-mid);margin-top:3px;text-transform:uppercase;letter-spacing:.05em}
+.bar-row-wrap{display:grid;grid-template-columns:130px 1fr 32px;align-items:center;gap:7px;padding:3px 0}
+.bar-row-label{font-size:11px;color:var(--text-mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-wrap{background:var(--surface2);border-radius:3px;overflow:hidden;height:9px}
+.bar-fill{height:100%;border-radius:3px;transition:width .4s}
+.bar-row-val{font-size:11px;color:var(--text-dim);text-align:right}
+
+/* Pivot tables */
+.pivot-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:8px}
+.pivot-table{border-collapse:collapse;min-width:100%;font-size:11px}
+.pivot-table th{background:var(--surface2);padding:6px 9px;text-align:center;font-weight:500;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-mid);border-bottom:1px solid var(--border);white-space:nowrap}
+.pivot-table th.name-col{text-align:left;min-width:150px;position:sticky;left:0;background:var(--surface2);z-index:1}
+.pivot-table td{padding:5px 9px;text-align:center;border-bottom:1px solid var(--border)}
+.pivot-table td.name-col{text-align:left;color:var(--text-mid);font-size:11px;position:sticky;left:0;background:var(--surface);z-index:1}
+.pivot-table tr:last-child td{border-bottom:none}
+.pivot-table tbody tr:hover td{background:var(--surface2)}
+.pivot-table tbody tr:hover td.name-col{background:var(--surface2)}
+.pivot-table .total-row td{background:var(--surface2);font-weight:600;border-top:1px solid var(--border-hi)}
+.pivot-table .total-row td.name-col{background:var(--surface2)}
+.cell-pos{color:var(--accent);font-weight:500}
+.cell-zero{color:var(--text-dim)}
+
+/* Experts tab */
+.experts-wrap{padding:18px 22px;overflow-y:auto;display:flex;flex-direction:column;gap:18px}
+.expert-group{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.expert-group-head{background:var(--surface2);padding:9px 13px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.expert-group-title{font-family:var(--display);font-size:13px;font-weight:700}
+.add-btn{padding:5px 11px;border-radius:5px;background:var(--accent);color:#0d1117;border:none;font-family:var(--mono);font-size:11px;font-weight:500;cursor:pointer;white-space:nowrap}
+.add-btn:hover{filter:brightness(1.1)}
+
+/* Modals */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(4px);z-index:500;place-items:center;padding:16px}
+.modal-overlay.open{display:grid}
+.modal{background:var(--surface);border:1px solid var(--border-hi);border-radius:11px;padding:20px;width:460px;max-width:100%;max-height:90vh;overflow-y:auto;animation:modalIn .18s ease}
+.modal-lg{width:520px}
+@keyframes modalIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+.modal-title{font-family:var(--display);font-size:15px;font-weight:700;margin-bottom:4px}
+.modal-sub{font-size:11px;color:var(--text-mid);margin-bottom:14px;padding:6px 9px;background:var(--surface2);border-radius:5px;border:1px solid var(--border)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.form-field{display:flex;flex-direction:column;gap:4px}
+.form-field.full{grid-column:1/-1}
+.form-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim)}
+.form-input,.form-select{background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:6px 9px;color:var(--text);font-family:var(--mono);font-size:12px;transition:border-color .2s;width:100%}
+.form-input:focus,.form-select:focus{outline:none;border-color:var(--accent)}
+.modal-actions{display:flex;gap:7px}
+.modal-actions .btn{flex:1}
+.cm-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px}
+.cm-stat{padding:9px;background:var(--surface2);border-radius:6px;text-align:center}
+.cm-stat-num{font-size:16px;font-weight:800;font-family:var(--display)}
+.cm-stat-label{font-size:10px;color:var(--text-mid);margin-top:2px;text-transform:uppercase;letter-spacing:.05em}
+
+#toast-container{position:fixed;bottom:16px;right:16px;display:flex;flex-direction:column;gap:5px;z-index:1000}
+.toast{padding:9px 12px;border-radius:6px;font-size:12px;max-width:280px;display:flex;align-items:flex-start;gap:7px;animation:slideIn .2s ease;box-shadow:0 6px 18px rgba(0,0,0,.4)}
+.toast-success{background:var(--surface2);border:1px solid rgba(0,200,150,.4)}
+.toast-error{background:var(--surface2);border:1px solid rgba(239,68,68,.4)}
+.toast-warn{background:var(--surface2);border:1px solid rgba(245,158,11,.4)}
+@keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.c0{background:#00c896}.c1{background:#6366f1}.c2{background:#f59e0b}.c3{background:#ec4899}.c4{background:#3b82f6}.c5{background:#14b8a6}.c6{background:#f97316}.c7{background:#84cc16}
+@media(max-width:760px){.main{grid-template-columns:1fr}aside{border-right:none;border-bottom:1px solid var(--border)}}
+
+/* Sort arrows */
+th .sort-arrow{display:inline-block;width:12px;text-align:center;font-size:9px;opacity:.3;transition:opacity .15s;vertical-align:middle}
+th .sort-arrow::after{content:'↕'}
+th.sorted .sort-arrow{opacity:1}
+th.sorted.asc .sort-arrow::after{content:'↑'}
+th.sorted.desc .sort-arrow::after{content:'↓'}
+
+/* Sort bar */
+.sort-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.sort-bar-label{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}
+.sort-chip{padding:4px 9px;border-radius:20px;font-family:var(--mono);font-size:11px;cursor:pointer;background:var(--surface2);border:1px solid var(--border);color:var(--text-mid);transition:all .15s;white-space:nowrap}
+.sort-chip:hover{border-color:var(--border-hi);color:var(--text)}
+.sort-chip.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+.sort-chip .arrow{margin-left:4px;font-size:10px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-badge">OM</div>
+    <div>
+      <div class="logo-text">Oliver McGowan Training Hub</div>
+      <div class="logo-sub">Session Register &middot; NEL ICB</div>
+    </div>
+  </div>
+<div class="sync-pill">
+  <div class="sync-dot synced" id="syncDot"></div>
+  <span id="syncLabel">Ready</span>
+  <span id="healthIndicator">✅ Healthy</span>
+</div>
+</header>
+
+<div class="nav-tabs">
+  <button class="tab-btn active" onclick="switchTab('register')">&#128203; Register</button>
+  <button class="tab-btn" onclick="switchTab('overview')">&#128202; Overview</button>
+  <button class="tab-btn" onclick="switchTab('experts')">&#128101; Expert Co-trainers</button>
+</div>
+
+<div class="main">
+
+  <!-- ── SIDEBAR ── -->
+  <aside>
+    <!-- Import sub-tabs -->
+    <div>
+      <div class="section-label">Add Sessions</div>
+      <div class="import-tabs">
+        <button class="import-tab active" onclick="switchImportTab('csv')">CSV</button>
+        <button class="import-tab" onclick="switchImportTab('excel')">Excel</button>
+        <button class="import-tab" onclick="switchImportTab('manual')">Manual</button>
+      </div>
+
+      <!-- CSV -->
+      <div class="import-panel active" id="ip-csv">
+        <div class="drop-zone" id="dropZoneCSV">
+          <input type="file" id="fileInputCSV" accept=".csv">
+          <div class="drop-icon">&#128194;</div>
+          <div class="drop-label"><strong>Choose CSV</strong> or drag &amp; drop</div>
+        </div>
+        <div class="file-selected" id="fileSelectedCSV"><span>&#128196;</span><span id="fileNameCSV"></span></div>
+        <div style="margin-top:6px">
+          <button class="btn btn-primary" id="importBtnCSV" disabled onclick="previewImport('csv')">&#9654; Preview &amp; Import CSV</button>
+        </div>
+      </div>
+
+      <!-- Excel -->
+      <div class="import-panel" id="ip-excel">
+        <div class="drop-zone" id="dropZoneXLSX">
+          <input type="file" id="fileInputXLSX" accept=".xlsx,.xls">
+          <div class="drop-icon">&#128196;</div>
+          <div class="drop-label"><strong>Choose Excel</strong> or drag &amp; drop</div>
+          <div class="drop-label" style="font-size:10px;margin-top:2px;color:var(--text-dim)">.xlsx or .xls</div>
+        </div>
+        <div class="file-selected" id="fileSelectedXLSX"><span>&#128196;</span><span id="fileNameXLSX"></span></div>
+        <div style="margin-top:6px">
+          <button class="btn btn-primary" id="importBtnXLSX" disabled onclick="previewImport('xlsx')">&#9654; Preview &amp; Import Excel</button>
+        </div>
+      </div>
+
+      <!-- Manual -->
+      <div class="import-panel" id="ip-manual">
+        <button class="btn btn-primary" onclick="openAddModal()" style="margin-top:2px">&#43; Add Session Manually</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Summary</div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-num" id="statTotal">0</div><div class="stat-label">Sessions</div></div>
+        <div class="stat-card"><div class="stat-num" id="statSites">0</div><div class="stat-label">Sites</div></div>
+        <div class="stat-card"><div class="stat-num" id="statKeep">0</div><div class="stat-label">Upcoming</div></div>
+        <div class="stat-card"><div class="stat-num" id="statCancelled" style="color:var(--danger)">0</div><div class="stat-label">Cancelled</div></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Sites</div>
+      <div class="sites-list" id="sitesList"><div style="font-size:11px;color:var(--text-dim)">Loading&hellip;</div></div>
+    </div>
+
+    <div class="sync-section">
+      <div class="section-label">Cloud Sync</div>
+      <div class="sync-info">Syncs to <span>JSONbin</span> after every change. Team members see latest on reload.</div>
+      <button class="btn btn-secondary" onclick="loadFromCloud()">&#8595; Load from Cloud</button>
+      <button class="btn btn-danger" onclick="clearAll()">&#10005; Clear All Sessions</button>
+    </div>
+  </aside>
+
+  <!-- ── REGISTER ── -->
+  <div class="tab-panel active" id="panel-register">
+    <div class="content">
+      <div class="toolbar">
+        <div class="toolbar-title">Session Register</div>
+        <input type="text" class="filter-input" id="filterText" placeholder="Search&hellip;" oninput="renderTable()">
+        <select class="filter-select" id="filterSite" onchange="renderTable()"><option value="">All sites</option></select>
+        <select class="filter-select" id="filterTrainer" onchange="renderTable()"><option value="">All trainers</option></select>
+        <select class="filter-select" id="filterStatus" onchange="renderTable()">
+          <option value="">All statuses</option>
+          <option value="keep">Upcoming</option>
+          <option value="cancelled">Cancelled</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+      <div class="sort-bar" style="margin-bottom:10px">
+        <span class="sort-bar-label">Sort:</span>
+        <button class="sort-chip active" id="sc-date"    onclick="sortBy('date')"   >Date <span class="arrow"></span></button>
+        <button class="sort-chip"        id="sc-site"    onclick="sortBy('site')"   >Site <span class="arrow"></span></button>
+        <button class="sort-chip"        id="sc-trainer" onclick="sortBy('trainer')">Trainer <span class="arrow"></span></button>
+        <button class="sort-chip"        id="sc-room"    onclick="sortBy('room')"   >Room <span class="arrow"></span></button>
+        <button class="sort-chip"        id="sc-status"  onclick="sortBy('status')" >Status <span class="arrow"></span></button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th onclick="sortBy('date')" id="th-date">Date <span class="sort-arrow"></span></th>
+              <th onclick="sortBy('site')" id="th-site">Site <span class="sort-arrow"></span></th>
+              <th onclick="sortBy('room')" id="th-room">Room <span class="sort-arrow"></span></th>
+              <th>LD Expert (AM)</th>
+              <th>Autism Expert (PM)</th>
+              <th onclick="sortBy('trainer')" id="th-trainer">Main Trainer <span class="sort-arrow"></span></th>
+              <th onclick="sortBy('status')" id="th-status">Status <span class="sort-arrow"></span></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+        <div class="empty-state" id="emptyState" style="display:none">
+          <div style="font-size:28px;margin-bottom:7px">&#128269;</div>
+          <div style="color:var(--text-mid)">No results match your filters</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── OVERVIEW ── -->
+  <div class="tab-panel" id="panel-overview">
+    <div class="ov-wrap" id="ovWrap">
+      <div style="color:var(--text-dim);font-size:12px;padding:40px 0;text-align:center">Loading&hellip;</div>
+    </div>
+  </div>
+
+  <!-- ── EXPERTS ── -->
+  <div class="tab-panel" id="panel-experts">
+    <div class="experts-wrap" id="expertsWrap"></div>
+  </div>
+</div>
+
+<!-- ── ADD SESSION MODAL ── -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal modal-lg">
+    <div class="modal-title" id="addModalTitle">Add Session</div>
+    <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="form-field">
+        <div class="form-label">Date <span style="color:var(--danger)">*</span></div>
+        <input class="form-input" id="addDate" type="date">
+      </div>
+      <div class="form-field">
+        <div class="form-label">Site <span style="color:var(--danger)">*</span></div>
+        <input class="form-input" id="addSite" list="siteList" placeholder="e.g. Homerton">
+        <datalist id="siteList"></datalist>
+      </div>
+      <div class="form-field">
+        <div class="form-label">Room <span style="color:var(--danger)">*</span></div>
+        <input class="form-input" id="addRoom" list="roomList" placeholder="e.g. Conference Room 1">
+        <datalist id="roomList"></datalist>
+      </div>
+      <div class="form-field">
+        <div class="form-label">Main Trainer</div>
+        <input class="form-input" id="addTrainer" list="trainerList2" placeholder="e.g. Jody">
+        <datalist id="trainerList2"></datalist>
+      </div>
+      <div class="form-field">
+        <div class="form-label">LD Expert (AM)</div>
+        <input class="form-input" id="addLD" list="ldList2" placeholder="e.g. Maria Barrett">
+        <datalist id="ldList2"></datalist>
+      </div>
+      <div class="form-field">
+        <div class="form-label">Autism Expert (PM)</div>
+        <input class="form-input" id="addAut" list="autList2" placeholder="e.g. Wasim Irani">
+        <datalist id="autList2"></datalist>
+      </div>
+      <div class="form-field full">
+        <div class="form-label">Status</div>
+        <select class="form-select" id="addStatus">
+          <option value="keep">Upcoming</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeAddModal()">Cancel</button>
+      <button class="btn btn-primary" id="addSaveBtn" onclick="saveAdd()">Add Session</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── EDIT SESSION MODAL ── -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal modal-lg">
+    <div class="modal-title">Edit Session</div>
+    <div class="modal-sub" id="editSub"></div>
+    <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="form-field">
+        <div class="form-label">Main Trainer</div>
+        <input class="form-input" id="editTrainer" list="trainerList" placeholder="e.g. Jody">
+        <datalist id="trainerList"></datalist>
+      </div>
+      <div class="form-field">
+        <div class="form-label">LD Expert (AM)</div>
+        <input class="form-input" id="editLD" list="ldList" placeholder="e.g. Maria Barrett">
+        <datalist id="ldList"></datalist>
+      </div>
+      <div class="form-field">
+        <div class="form-label">Autism Expert (PM)</div>
+        <input class="form-input" id="editAut" list="autList" placeholder="e.g. Wasim Irani">
+        <datalist id="autList"></datalist>
+      </div>
+      <div class="form-field full">
+        <div class="form-label">Status</div>
+        <select class="form-select" id="editStatus">
+          <option value="keep">Upcoming</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── IMPORT CONFIRM MODAL ── -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal">
+    <div class="modal-title">Confirm Import</div>
+    <div class="cm-stats">
+      <div class="cm-stat"><div class="cm-stat-num" id="modalNew" style="color:var(--accent)">0</div><div class="cm-stat-label">New</div></div>
+      <div class="cm-stat"><div class="cm-stat-num" id="modalReplace" style="color:var(--warn)">0</div><div class="cm-stat-label">Replaced</div></div>
+      <div class="cm-stat"><div class="cm-stat-num" id="modalSkipped" style="color:var(--text-dim)">0</div><div class="cm-stat-label">Skipped</div></div>
+      <div class="cm-stat"><div class="cm-stat-num" id="modalTotal">0</div><div class="cm-stat-label">Total after</div></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeConfirmModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmImport()">Confirm Import</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── EDIT EXPERT MODAL ── -->
+<div class="modal-overlay" id="editExpertModal">
+  <div class="modal">
+    <div class="modal-title">Edit Expert Name</div>
+    <div class="modal-sub" id="editExpertSub"></div>
+    <div class="form-grid" style="grid-template-columns:1fr">
+      <div class="form-field full">
+        <div class="form-label">Name</div>
+        <input class="form-input" id="editExpertInput" type="text" placeholder="Full name">
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text-mid);margin-bottom:14px;padding:6px 9px;background:var(--warn-dim);border:1px solid rgba(245,158,11,.3);border-radius:5px" id="editExpertWarn"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeEditExpertModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEditExpert()">Save &amp; Update Sessions</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+const BIN_ID='69f31ab7856a6821898d6069';
+const MASTER_KEY='$2a$10$ncuN5xJXKjbWDcx8XcBRhOa5EzH1mo75DNlmKpkP6cP4tBSP57FDi';
+const BIN_URL='https://api.jsonbin.io/v3/b/'+BIN_ID;
+const SHEETS_URL='https://script.google.com/macros/s/AKfycbz74NtgUfU04cVnvKojdA8UzkpkZN_M9aCEcG-Fb5P0JYs16mkl4aErfZqH7HOWWI4beQ/exec';
+const GH_TOKEN='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';
+const GH_REPO='nelolivermcgowantraininghub-afk/omth-session-register';
+const GH_FILE='data.json';
+const GH_API='https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_FILE;
+const SITE_COLORS=['c0','c1','c2','c3','c4','c5','c6','c7'];
+const MONTH_NAMES=['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+const NAME_MAP={
+  'Ameera':'Ameera Patel','Angelina':'Angelina Bou-Chedid','Cass':'Cass Marshall',
+  'Hannah':'Hannah Lees','Irene':'Irene Frischknecht','Matthew':'Matthew Quinn',
+  'Suresh':'Suresh Singh','Umer':'Umer Qureshi','Wasim':'Wasim Irani',
+  'Connor':'Connor Chana','Diyar':'Diyar Huseyinoglu','Gurpreet':'Gurpreet Lal',
+  'Izzet':'Izzet Akkaya','Lee':'Lee Adiele','Mahdi':'Mahdi Muhith',
+  'Maria':'Maria Barrett','Peter':'Peter Allum'
+};
+
+const EMBEDDED=[{"date": "19 May 2026", "day": "Tue", "site": "Royal London", "room": "Seminar Room 6", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "26 May 2026", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "Maria Barrett", "autExpert": "Wasim Irani", "trainer": "Jody & Bili", "status": "keep"}, {"date": "27 May 2026", "day": "Wed", "site": "Homerton", "room": "Costeloe Lecture Theatre", "ldExpert": "Diyar Huseyinoglu", "autExpert": "Umer Qureshi", "trainer": "Jody & Bili", "status": "keep"}, {"date": "01 June 2026", "day": "Mon", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "Lee Adiele", "autExpert": "Hannah Lees", "trainer": "Jody & Bili", "status": "keep"}, {"date": "08 June 2026", "day": "Mon", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "Gurpreet Lal", "autExpert": "Wasim Irani", "trainer": "Jody", "status": "keep"}, {"date": "09 June 2026", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "Izzet Akkaya", "autExpert": "Wasim Irani", "trainer": "Bili", "status": "keep"}, {"date": "12 June 2026", "day": "Fri", "site": "Homerton", "room": "Costeloe Lecture Theatre", "ldExpert": "Connor Chana", "autExpert": "Irene Frischknecht", "trainer": "Bili", "status": "keep"}, {"date": "15 June 2026", "day": "Mon", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "Diyar Huseyinoglu", "autExpert": "Ameera Patel", "trainer": "Jody", "status": "keep"}, {"date": "17 June 2026", "day": "Wed", "site": "Homerton", "room": "Classroom 4 & 5", "ldExpert": "Mahdi Muhith", "autExpert": "Cass Marshall", "trainer": "Bili", "status": "keep"}, {"date": "22 June 2026", "day": "Mon", "site": "Homerton", "room": "Costeloe Lecture Theatre", "ldExpert": "Lee Adiele", "autExpert": "Hannah Lees", "trainer": "Bili", "status": "keep"}, {"date": "22 June 2026", "day": "Mon", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "Connor Chana", "autExpert": "Matthew Quinn", "trainer": "Jody", "status": "keep"}, {"date": "22 June 2026", "day": "Mon", "site": "Royal London", "room": "Seminar Room 6", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "23 June 2026", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "Izzet Akkaya", "autExpert": "Cass Marshall", "trainer": "Bili", "status": "keep"}, {"date": "25 June 2026", "day": "Thu", "site": "Royal London", "room": "Seminar Room 5", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "29 June 2026", "day": "Mon", "site": "Homerton", "room": "Costeloe Lecture Theatre", "ldExpert": "Mahdi Muhith", "autExpert": "Irene Frischknecht", "trainer": "Bili", "status": "keep"}, {"date": "29 June 2026", "day": "Mon", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "Gurpreet Lal", "autExpert": "Angelina Bou-Chedid", "trainer": "Jody", "status": "keep"}, {"date": "30 June 2026", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "Peter Allum", "autExpert": "Suresh Singh", "trainer": "Jody", "status": "keep"}, {"date": "01 July 2026", "day": "Wed", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "Izzet Akkaya", "autExpert": "Ameera Patel", "trainer": "Bili", "status": "keep"}, {"date": "03 July 2026", "day": "Fri", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "Connor Chana", "autExpert": "Umer Qureshi", "trainer": "Jody", "status": "keep"}, {"date": "06 July 2026", "day": "Mon", "site": "Royal London", "room": "Seminar Room 5", "ldExpert": "Gurpreet Lal", "autExpert": "Hannah Lees", "trainer": "Jody", "status": "keep"}, {"date": "06 July 2026", "day": "Mon", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "Mahdi Muhith", "autExpert": "Matthew Quinn", "trainer": "Bili", "status": "keep"}, {"date": "07 July 2026", "day": "Tue", "site": "Homerton", "room": "Costeloe Lecture Theatre", "ldExpert": "Connor Chana", "autExpert": "Angelina Bou-Chedid", "trainer": "Bili", "status": "keep"}, {"date": "13 July 2026", "day": "Mon", "site": "Homerton", "room": "Costeloe Lecture Theatre", "ldExpert": "Lee Adiele", "autExpert": "Suresh Singh", "trainer": "Bili", "status": "keep"}, {"date": "13 July 2026", "day": "Mon", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "Peter Allum", "autExpert": "Matthew Quinn", "trainer": "Jody", "status": "keep"}, {"date": "14 July 2026", "day": "Tue", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "Umer Qureshi", "trainer": "Jody", "status": "keep"}, {"date": "14 July 2026", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "Maria Barrett", "autExpert": "Ameera Patel", "trainer": "Bili", "status": "keep"}, {"date": "16 July 2026", "day": "Thu", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "20 July 2026", "day": "Mon", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "21 July 2026", "day": "Tue", "site": "Homerton", "room": "Costeloe Lecture Theatre", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "22 July 2026", "day": "Wed", "site": "Royal London", "room": "Seminar Room 6", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "27 July 2026", "day": "Mon", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "Irene Frischknecht", "trainer": "Bili", "status": "keep"}, {"date": "28 July 2026", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "Suresh Singh", "trainer": "Jody", "status": "keep"}, {"date": "30 July 2026", "day": "Thu", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "Irene Frischknecht", "trainer": "Bili", "status": "keep"}, {"date": "31 July 2026", "day": "Fri", "site": "Royal London", "room": "Seminar Room 6", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "03 August 2026", "day": "Mon", "site": "Royal London", "room": "Seminar Room 6", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "03 August 2026", "day": "Mon", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "04 August 2026", "day": "Tue", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "06 August 2026", "day": "Thu", "site": "Royal London", "room": "Seminar Room 5", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "07 August 2026", "day": "Fri", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "10 August 2026", "day": "Mon", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "10 August 2026", "day": "Mon", "site": "Royal London", "room": "Seminar Room 6", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "11 August 2026", "day": "Tue", "site": "Royal London", "room": "Seminar Room 6", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "12 August 2026", "day": "Wed", "site": "Royal London", "room": "Seminar Room 5", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "17 August 2026", "day": "Mon", "site": "Royal London", "room": "Seminar Room 5", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "18 August 2026", "day": "Tue", "site": "Homerton", "room": "Costeloe Lecture Theatre", "ldExpert": "Maria Barrett", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "19 August 2026", "day": "Wed", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "21 August 2026", "day": "Fri", "site": "Royal London", "room": "Seminar Room 5", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "24 August 2026", "day": "Mon", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "25 August 2026", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "25 August 2026", "day": "Tue", "site": "Royal London", "room": "Seminar Room 1", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "25 August 2026", "day": "Tue", "site": "Royal London", "room": "Seminar Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "26 August 2026", "day": "Wed", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "01 September 2026", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "01 September 2026", "day": "Tue", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "02 September 2026", "day": "Wed", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "03 September 2026", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "03 September 2026", "day": "Thu", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "04 September 2026", "day": "Fri", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "08 September 2026", "day": "Tue", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "09 September 2026", "day": "Wed", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "09 September 2026", "day": "Wed", "site": "Homerton", "room": "Classroom 4 & 5", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "11 September 2026", "day": "Fri", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "15 September 2026", "day": "Tue", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "15 September 2026", "day": "Tue", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "16 September 2026", "day": "Wed", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "16 September 2026", "day": "Wed", "site": "Homerton", "room": "Classroom 4 & 5", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "17 September 2026", "day": "Thu", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "18 September 2026", "day": "Fri", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "22 September 2026", "day": "Tue", "site": "Royal London", "room": "Seminar Room 5", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "23 September 2026", "day": "Wed", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "23 September 2026", "day": "Wed", "site": "Homerton", "room": "Classroom 4 & 5", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "24 September 2026", "day": "Thu", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "24 September 2026", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "25 September 2026", "day": "Fri", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "28 September 2026", "day": "Mon", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "30 September 2026", "day": "Wed", "site": "Homerton", "room": "Classroom 4 & 5", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "01 October 2026", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "05 October 2026", "day": "Mon", "site": "Royal London", "room": "Seminar Room 6", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "06 October 2026", "day": "Tue", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "06 October 2026", "day": "Tue", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "07 October 2026", "day": "Wed", "site": "Homerton", "room": "Classroom 4 & 5", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "08 October 2026", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "08 October 2026", "day": "Thu", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "09 October 2026", "day": "Fri", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "13 October 2026", "day": "Tue", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "14 October 2026", "day": "Wed", "site": "Homerton", "room": "Classroom 4 & 5", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "14 October 2026", "day": "Wed", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "15 October 2026", "day": "Thu", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "15 October 2026", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "20 October 2026", "day": "Tue", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "20 October 2026", "day": "Tue", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "21 October 2026", "day": "Wed", "site": "Homerton", "room": "Classroom 4 & 5", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "22 October 2026", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "22 October 2026", "day": "Thu", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "23 October 2026", "day": "Fri", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "27 October 2026", "day": "Tue", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "27 October 2026", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "27 October 2026", "day": "Tue", "site": "Newham", "room": "LectureTheat 2B", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "28 October 2026", "day": "Wed", "site": "Homerton", "room": "Classroom 4 & 5", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "28 October 2026", "day": "Wed", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "29 October 2026", "day": "Thu", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "29 October 2026", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "02 November 2026", "day": "Mon", "site": "Royal London", "room": "Seminar Room 6", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "02 November 2026", "day": "Mon", "site": "Royal London", "room": "Seminar Room 5", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "03 November 2026", "day": "Tue", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "03 November 2026", "day": "Tue", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "04 November 2026", "day": "Wed", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "04 November 2026", "day": "Wed", "site": "Homerton", "room": "Classroom 4 & 5", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "04 November 2026", "day": "Wed", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "05 November 2026", "day": "Thu", "site": "Royal London", "room": "Seminar Room 5", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "06 November 2026", "day": "Fri", "site": "Royal London", "room": "Seminar Room 6", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "06 November 2026", "day": "Fri", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "09 November 2026", "day": "Mon", "site": "Newham", "room": "LectureTheat 2B", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "10 November 2026", "day": "Tue", "site": "Newham", "room": "LectureTheat 2B", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "10 November 2026", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "11 November 2026", "day": "Wed", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "11 November 2026", "day": "Wed", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "11 November 2026", "day": "Wed", "site": "Homerton", "room": "Classroom 4 & 5", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "13 November 2026", "day": "Fri", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "16 November 2026", "day": "Mon", "site": "Royal London", "room": "Seminar Room 6", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "18 November 2026", "day": "Wed", "site": "Homerton", "room": "Classroom 4 & 5", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "18 November 2026", "day": "Wed", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "19 November 2026", "day": "Thu", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "19 November 2026", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "20 November 2026", "day": "Fri", "site": "Royal London", "room": "Seminar Room 6", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "20 November 2026", "day": "Fri", "site": "Royal London", "room": "Seminar Room 5", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "20 November 2026", "day": "Fri", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "23 November 2026", "day": "Mon", "site": "Royal London", "room": "Seminar Room 6", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "27 November 2026", "day": "Fri", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "30 November 2026", "day": "Mon", "site": "Royal London", "room": "Seminar Room 5", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "01 December 2026", "day": "Tue", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "02 December 2026", "day": "Wed", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "02 December 2026", "day": "Wed", "site": "Homerton", "room": "Classroom 4 & 5", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "03 December 2026", "day": "Thu", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "08 December 2026", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "09 December 2026", "day": "Wed", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "09 December 2026", "day": "Wed", "site": "Homerton", "room": "Classroom 4 & 5", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "09 December 2026", "day": "Wed", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "10 December 2026", "day": "Thu", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "10 December 2026", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "11 December 2026", "day": "Fri", "site": "Royal London", "room": "Seminar Room 6", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "14 December 2026", "day": "Mon", "site": "Royal London", "room": "Seminar Room 5", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "15 December 2026", "day": "Tue", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "16 December 2026", "day": "Wed", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "17 December 2026", "day": "Thu", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "17 December 2026", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "18 December 2026", "day": "Fri", "site": "Royal London", "room": "Seminar Room 5", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "18 December 2026", "day": "Fri", "site": "Royal London", "room": "Seminar Room 6", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "18 December 2026", "day": "Fri", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "21 December 2026", "day": "Mon", "site": "Royal London", "room": "Seminar Room 5", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "21 December 2026", "day": "Mon", "site": "Royal London", "room": "Seminar Room 6", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "22 December 2026", "day": "Tue", "site": "Mile End", "room": "Room 5A/5B", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "22 December 2026", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "Jody", "status": "keep"}, {"date": "22 December 2026", "day": "Tue", "site": "Royal London", "room": "Seminar Room 5", "ldExpert": "", "autExpert": "", "trainer": "Bili", "status": "keep"}, {"date": "22 December 2026", "day": "Tue", "site": "Royal London", "room": "Seminar Room 6", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "07 January 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "12 January 2027", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "14 January 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "21 January 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "04 February 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "09 February 2027", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "18 February 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "02 March 2027", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "04 March 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "23 March 2027", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "25 March 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "30 March 2027", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "01 April 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "06 April 2027", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "08 April 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "15 April 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "22 April 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "27 April 2027", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "29 April 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "04 May 2027", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "06 May 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "11 May 2027", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "13 May 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "20 May 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "25 May 2027", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "01 June 2027", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "10 June 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "17 June 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "22 June 2027", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "29 June 2027", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "01 July 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "08 July 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "13 July 2027", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "15 July 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "22 July 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "27 July 2027", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "29 July 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "05 August 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "10 August 2027", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "12 August 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "19 August 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "24 August 2027", "day": "Tue", "site": "Homerton", "room": "Conference Room 1", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}, {"date": "26 August 2027", "day": "Thu", "site": "Homerton", "room": "Conference Room 2", "ldExpert": "", "autExpert": "", "trainer": "TBC", "status": "keep"}];
+let AUTISM_EXPERTS=["Ameera Patel", "Angelina Bou-Chedid", "Cass Marshall", "Hannah Lees", "Irene Frischknecht", "Matthew Quinn", "Suresh Singh", "Umer Qureshi", "Wasim Irani"];
+let LD_EXPERTS=["Connor Chana", "Diyar Huseyinoglu", "Gurpreet Lal", "Izzet Akkaya", "Lee Adiele", "Mahdi Muhith", "Maria Barrett", "Peter Allum"];
+let TRAINERS=["Jody", "Bili", "Jody & Bili"];
+
+let data=[],pendingImport=[],sortField='date',sortDir=1,siteColorMap={},editIdx=-1,activeTab='register';
+
+function clean(v){return (v||'').trim();}
+function escH(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function stripNum(s){return (s||'').replace(/\s*\(\d+\)\s*$/,'').trim();}
+function expandName(s){
+  s=stripNum(s);
+  const first=s.split(' ')[0];
+  return NAME_MAP[s]||NAME_MAP[first]||s;
+}
+
+function setSyncStatus(s,l){document.getElementById('syncDot').className='sync-dot '+s;document.getElementById('syncLabel').textContent=l;}
+function toast(msg,type='success'){
+  const ic={success:'✅',error:'❌',warn:'⚠️'};
+  const el=document.createElement('div');
+  el.className='toast toast-'+type;
+  el.innerHTML='<span>'+(ic[type]||'ℹ️')+'</span><span>'+escH(msg)+'</span>';
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .4s';setTimeout(()=>el.remove(),400);},3500);
+}
+
+// Date helpers
+function dateToNum(d){
+  const parsed = parseDateSafe(d);
+  if(!parsed) return 99999999;
+
+  return parsed.getFullYear()*10000 +
+         (parsed.getMonth()+1)*100 +
+         parsed.getDate();
+}
+
+function normalizeAllDates(){
+  let fixed = 0;
+
+  data.forEach(r => {
+    const p = parseDateSafe(r.date);
+    if(!p) return;
+
+    const cleanDate =
+      String(p.getDate()).padStart(2,'0') + ' ' +
+      MONTH_NAMES[p.getMonth()] + ' ' +
+      p.getFullYear();
+
+    if(r.date !== cleanDate){
+      r.date = cleanDate;
+
+      const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      r.day = days[p.getDay()];
+
+      fixed++;
+    }
+  });
+
+  data.sort((a,b)=>dateToNum(a.date) - dateToNum(b.date));
+
+  if(fixed > 0) {
+    console.log("Auto fixed", fixed, "dates");
+  }
+}
+
+function monthLabel(d){const p=(d||'').trim().split(' ');return p.length>=3?p[1]+' '+p[2]:d;}
+function monthKey(d){const p=(d||'').trim().split(' ');if(p.length<3)return '999999';return p[2]+String(MONTH_NAMES.indexOf(p[1])+1).padStart(2,'0');}
+function monthShort(ml){const p=ml.split(' ');return p[0].slice(0,3)+'-'+p[1].slice(2);}
+function isoToDisplay(iso){
+  // "2026-05-19" -> "19 May 2026", day abbrev
+  const d=new Date(iso+'T00:00:00');
+  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  return {day:days[d.getDay()],date:String(d.getDate()).padStart(2,'0')+' '+MONTH_NAMES[d.getMonth()]+' '+d.getFullYear()};
+}
+// ✅ Safe parser
+function parseDateSafe(d){
+  if(!d) return null;
+
+  const parsed = new Date(d);
+  if(!isNaN(parsed)) return parsed;
+
+  const p = d.trim().split(' ');
+  if(p.length === 3){
+    const day = parseInt(p[0]);
+    const month = MONTH_NAMES.indexOf(p[1]);
+    const year = parseInt(p[2]);
+    if(month >= 0) return new Date(year, month, day);
+  }
+
+  return null;
+}
+
+// ✅ Detect bad
+function isBadDate(d){
+  return !parseDateSafe(d);
+}
+
+// Tab switching
+function switchTab(t){
+  activeTab=t;
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',['register','overview','experts'][i]===t));
+  ['register','overview','experts'].forEach(n=>document.getElementById('panel-'+n).classList.toggle('active',n===t));
+  if(t==='overview')renderOverview();
+  if(t==='experts')renderExperts();
+}
+function switchImportTab(t){
+  document.querySelectorAll('.import-tab').forEach((b,i)=>b.classList.toggle('active',['csv','excel','manual'][i]===t));
+  document.querySelectorAll('.import-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('ip-'+t).classList.add('active');
+}
+
+// Stats & sidebar
+function updateStats(){
+  const sites=[...new Set(data.map(x=>x.site).filter(Boolean))];
+  const trainers=[...new Set(data.map(x=>x.trainer).filter(Boolean))].sort();
+  document.getElementById('statTotal').textContent=data.length;
+  document.getElementById('statSites').textContent=sites.length;
+  document.getElementById('statKeep').textContent=data.filter(x=>x.status==='keep').length;
+  document.getElementById('statCancelled').textContent=data.filter(x=>x.status==='cancelled').length;
+  sites.forEach((s,i)=>{if(!siteColorMap[s])siteColorMap[s]=SITE_COLORS[i%SITE_COLORS.length];});
+  document.getElementById('sitesList').innerHTML=sites.length
+    ?sites.map(s=>`<div class="site-tag"><span class="site-dot ${siteColorMap[s]}"></span><span>${escH(s)}</span><span class="site-count">${data.filter(x=>x.site===s).length}</span></div>`).join('')
+    :'<div style="font-size:11px;color:var(--text-dim)">No data</div>';
+  const fs=document.getElementById('filterSite'),cS=fs.value;
+  fs.innerHTML='<option value="">All sites</option>'+sites.map(s=>`<option${s===cS?' selected':''}>${escH(s)}</option>`).join('');
+  const ft=document.getElementById('filterTrainer'),cT=ft.value;
+  ft.innerHTML='<option value="">All trainers</option>'+trainers.map(t=>`<option${t===cT?' selected':''}>${escH(t)}</option>`).join('');
+  // Datalists
+  const rooms=[...new Set(data.map(x=>x.room).filter(Boolean))].sort();
+  document.getElementById('siteList').innerHTML=sites.map(s=>`<option value="${escH(s)}">`).join('');
+  document.getElementById('roomList').innerHTML=rooms.map(r=>`<option value="${escH(r)}">`).join('');
+  ['trainerList','trainerList2'].forEach(id=>{document.getElementById(id).innerHTML=[...TRAINERS,...trainers].filter((v,i,a)=>a.indexOf(v)===i).map(t=>`<option value="${escH(t)}">`).join('');});
+  ['ldList','ldList2'].forEach(id=>{document.getElementById(id).innerHTML=LD_EXPERTS.map(e=>`<option value="${escH(e)}">`).join('');});
+  ['autList','autList2'].forEach(id=>{document.getElementById(id).innerHTML=AUTISM_EXPERTS.map(e=>`<option value="${escH(e)}">`).join('');});
+}
+
+// ── Stable record IDs ─────────────────────────────────────────────────────────
+let _nextId = 1;
+function assignIds(){
+  data.forEach(r=>{ if(!r._id) r._id = _nextId++; });
+}
+function findById(id){ return data.findIndex(r=>r._id===id); }
+
+// Render table
+function renderTable(){
+updateHealthIndicator();
+  assignIds();
+  const q=document.getElementById('filterText').value.toLowerCase();
+  const s=document.getElementById('filterSite').value;
+  const tr=document.getElementById('filterTrainer').value;
+  const st=document.getElementById('filterStatus').value;
+  let rows=data.filter(r=>{
+    if(s&&r.site!==s)return false;
+    if(tr&&r.trainer!==tr)return false;
+    if(st&&r.status!==st)return false;
+    if(q&&![r.date,r.day,r.site,r.room,r.ldExpert,r.autExpert,r.trainer].join(' ').toLowerCase().includes(q))return false;
+    return true;
+  });
+  if(sortField==='date')rows.sort((a,b)=>sortDir*(dateToNum(a.date)-dateToNum(b.date)));
+  else rows.sort((a,b)=>{const av=(a[sortField]||'').toLowerCase(),bv=(b[sortField]||'').toLowerCase();return sortDir*(av<bv?-1:av>bv?1:0);});
+  const tbody=document.getElementById('tableBody');
+  const empty=document.getElementById('emptyState');
+  if(!rows.length){tbody.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  tbody.innerHTML=rows.map(r=>{
+    const col=siteColorMap[r.site]||'c0';
+    const stBadge=r.status==='keep'?'<span class="badge badge-keep">Upcoming</span>':r.status==='completed'?'<span class="badge badge-completed">Completed</span>':'<span class="badge badge-cancelled">Cancelled</span>';
+    const trB=r.trainer==='TBC'?'<span class="badge badge-tbc">TBC</span>':escH(r.trainer);
+    const rid=r._id;
+    const ld=r.ldExpert?escH(r.ldExpert):'<span style="color:var(--text-dim)">—</span>';
+    const aut=r.autExpert?escH(r.autExpert):'<span style="color:var(--text-dim)">—</span>';
+   const bad = isBadDate(r.date);
+
+return `<tr class="${bad ? 'bad-date' : ''}"
+           title="${bad ? 'Invalid date format (cannot parse)' : ''}"><td style="white-space:nowrap;font-weight:500">${escH(r.day)} ${escH(r.date)}</td><td><span style="display:inline-flex;align-items:center;gap:5px"><span class="site-dot ${col}"></span>${escH(r.site)}</span></td><td style="color:var(--text-mid)">${escH(r.room)||'—'}</td><td>${ld}</td><td>${aut}</td><td>${trB}</td><td>${stBadge}</td><td style="white-space:nowrap"><button class="icon-btn" onclick="openEditModal(${rid})" title="Edit">&#9998;</button><button class="icon-btn del" onclick="deleteRow(${rid})" title="Delete">&#10005;</button></td></tr>`;
+  }).join('');
+  // Update column header classes
+  ['date','site','room','trainer','status'].forEach(f=>{
+    const th=document.getElementById('th-'+f);
+    if(!th) return;
+    th.classList.toggle('sorted', f===sortField);
+    th.classList.toggle('asc',  f===sortField && sortDir===1);
+    th.classList.toggle('desc', f===sortField && sortDir===-1);
+  });
+  // Update sort chips
+  ['date','site','trainer','room','status'].forEach(f=>{
+    const chip=document.getElementById('sc-'+f);
+    if(!chip) return;
+    chip.classList.toggle('active', f===sortField);
+    const arrow=chip.querySelector('.arrow');
+    if(arrow) arrow.textContent = f===sortField ? (sortDir===1?' ↑':' ↓') : '';
+  });
+}
+function sortBy(f){if(sortField===f)sortDir*=-1;else{sortField=f;sortDir=1;}renderTable();}
+function deleteRow(rid){
+  if(!confirm('Remove this session?'))return;
+  const i=findById(rid); if(i===-1)return;
+  data.splice(i,1);updateStats();renderTable();refreshActive();saveToCloud();toast('Session removed','warn');
+}
+function refreshActive(){if(activeTab==='overview')renderOverview();if(activeTab==='experts')renderExperts();}
+
+// Add session modal
+function openAddModal(){
+  document.getElementById('addDate').value='';
+  document.getElementById('addSite').value='';
+  document.getElementById('addRoom').value='';
+  document.getElementById('addTrainer').value='';
+  document.getElementById('addLD').value='';
+  document.getElementById('addAut').value='';
+  document.getElementById('addStatus').value='keep';
+  document.getElementById('addModal').classList.add('open');
+}
+function closeAddModal(){document.getElementById('addModal').classList.remove('open');}
+function saveAdd(){
+  const iso = clean(document.getElementById('addDate').value);
+  const site = clean(document.getElementById('addSite').value);
+  const room = clean(document.getElementById('addRoom').value);
+
+  if(!iso || !site || !room){
+    toast('Date, Site and Room are required','error');
+    return;
+  }
+
+  const {day, date} = isoToDisplay(iso);
+
+  const rec = {
+    date, day, site, room,
+    ldExpert: expandName(clean(document.getElementById('addLD').value)),
+    autExpert: expandName(clean(document.getElementById('addAut').value)),
+    trainer: clean(document.getElementById('addTrainer').value) || 'TBC',
+    status: document.getElementById('addStatus').value
+  };
+
+  // duplicate check
+  const dup = data.find(x => x.date === date && x.site === site && x.room === room);
+  if(dup){
+    toast('A session already exists for this date/site/room','warn');
+    return;
+  }
+
+  rec._id = _nextId++;
+  data.push(rec);
+
+  // ✅ OPTIONAL BUT CLEAN
+  normalizeAllDates();
+
+  data.sort((a, b) => dateToNum(a.date) - dateToNum(b.date));
+
+  closeAddModal();
+  updateStats();
+  renderTable();       // ✅ this updates health automatically
+  refreshActive();
+  saveToCloud();
+
+  toast('Session added: ' + day + ' ' + date);
+}
+
+document.getElementById('addModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeAddModal();});
+
+// Edit modal
+function openEditModal(rid){
+  editIdx=rid; const i=findById(rid); if(i===-1)return; const r=data[i];
+  document.getElementById('editSub').textContent=r.day+' '+r.date+' · '+r.site+' · '+r.room;
+  document.getElementById('editTrainer').value=r.trainer==='TBC'?'':r.trainer;
+  document.getElementById('editLD').value=r.ldExpert||'';
+  document.getElementById('editAut').value=r.autExpert||'';
+  document.getElementById('editStatus').value=r.status;
+  document.getElementById('editModal').classList.add('open');
+}
+function closeEditModal(){document.getElementById('editModal').classList.remove('open');editIdx=-1;}
+function saveEdit(){
+  if(!editIdx)return;
+  const i=findById(editIdx); if(i===-1)return;
+  const r=data[i];
+  r.trainer=clean(document.getElementById('editTrainer').value)||'TBC';
+  r.ldExpert=expandName(clean(document.getElementById('editLD').value));
+  r.autExpert=expandName(clean(document.getElementById('editAut').value));
+  r.status=document.getElementById('editStatus').value;
+  closeEditModal();updateStats();renderTable();refreshActive();saveToCloud();toast('Session updated');
+}
+document.getElementById('editModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeEditModal();});
+
+// ── Pivot helpers ─────────────────────────────────────────────────────────────
+function buildMonthCols(rows){
+  const keys=[...new Set(rows.map(r=>monthKey(r.date)))].sort();
+  return keys.map(k=>{const r=rows.find(x=>monthKey(x.date)===k);return{key:k,label:monthShort(monthLabel(r.date))};});
+}
+function pivotCount(rows,groupFn,cols){
+  const map={};
+  rows.forEach(r=>{const g=groupFn(r);if(!g)return;const mk=monthKey(r.date);if(!map[g])map[g]={};map[g][mk]=(map[g][mk]||0)+1;});
+  return map;
+}
+function renderPivotTable(groups,pivotMap,cols,nameLabel){
+  if(!groups.length)return '<p style="color:var(--text-dim);font-size:11px;padding:12px">No data</p>';
+  const totals=cols.map(c=>groups.reduce((s,g)=>s+((pivotMap[g]&&pivotMap[g][c.key])||0),0));
+  const grand=totals.reduce((a,b)=>a+b,0);
+  const head=cols.map(c=>`<th>${escH(c.label)}</th>`).join('');
+  const body=groups.map(g=>{
+    const rt=cols.reduce((s,c)=>s+((pivotMap[g]&&pivotMap[g][c.key])||0),0);
+    const cells=cols.map(c=>{const v=(pivotMap[g]&&pivotMap[g][c.key])||0;return `<td><span class="${v?'cell-pos':'cell-zero'}">${v}</span></td>`;}).join('');
+    return `<tr><td class="name-col">${escH(g)}</td>${cells}<td style="color:var(--accent);font-weight:600">${rt}</td></tr>`;
+  }).join('');
+  const totRow=totals.map(v=>`<td style="font-weight:600">${v}</td>`).join('');
+  return `<div class="pivot-wrap"><table class="pivot-table"><thead><tr><th class="name-col">${nameLabel}</th>${head}<th style="color:var(--accent)">Total</th></tr></thead><tbody>${body}<tr class="total-row"><td class="name-col">Total</td>${totRow}<td style="color:var(--accent);font-weight:700">${grand}</td></tr></tbody></table></div>`;
+}
+
+// Overview — uses ALL sessions (any status)
+function renderOverview(){
+  const ow=document.getElementById('ovWrap');
+  if(!data.length){ow.innerHTML='<div style="color:var(--text-dim);font-size:12px;padding:40px 0;text-align:center">No sessions loaded</div>';return;}
+  const all=data; // all statuses
+  const upcoming=data.filter(x=>x.status==='keep');
+  const cols=buildMonthCols(all);
+  const tbcCount=all.filter(x=>x.trainer==='TBC').length;
+  const ldBlank=all.filter(x=>!x.ldExpert).length;
+  const autBlank=all.filter(x=>!x.autExpert).length;
+  const sites=[...new Set(all.map(x=>x.site).filter(Boolean))].sort();
+  const trainers=[...new Set(all.map(x=>x.trainer).filter(Boolean))].sort();
+  const sitePivot=pivotCount(all,r=>r.site,cols);
+  const trainerPivot=pivotCount(all,r=>r.trainer,cols);
+  const PALETTE=['#00c896','#6366f1','#f59e0b','#ec4899','#3b82f6','#14b8a6','#f97316','#84cc16'];
+  const siteBarHtml=sites.map((s,i)=>{const n=all.filter(x=>x.site===s).length;const pct=Math.round(n/all.length*100);return `<div class="bar-row-wrap"><div class="bar-row-label" title="${escH(s)}">${escH(s)}</div><div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:${PALETTE[i%8]}"></div></div><div class="bar-row-val">${n}</div></div>`;}).join('');
+  const trBarHtml=trainers.map((t,i)=>{const n=all.filter(x=>x.trainer===t).length;const pct=Math.round(n/all.length*100);return `<div class="bar-row-wrap"><div class="bar-row-label" title="${escH(t)}">${escH(t)}</div><div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:${PALETTE[i%8]}"></div></div><div class="bar-row-val">${n}</div></div>`;}).join('');
+  ow.innerHTML=`
+    <div>
+      <div class="ov-head">&#128200; Summary <span style="font-size:10px;color:var(--text-dim);font-weight:400">(all sessions)</span></div>
+      <div class="ov-cards">
+        <div class="ov-card"><div class="ov-card-num" style="color:var(--accent)">${all.length}</div><div class="ov-card-label">Total sessions</div></div>
+        <div class="ov-card"><div class="ov-card-num" style="color:var(--blue)">${upcoming.length}</div><div class="ov-card-label">Upcoming</div></div>
+        <div class="ov-card"><div class="ov-card-num" style="color:var(--danger)">${all.filter(x=>x.status==='cancelled').length}</div><div class="ov-card-label">Cancelled</div></div>
+        <div class="ov-card"><div class="ov-card-num" style="color:var(--warn)">${tbcCount}</div><div class="ov-card-label">Trainer TBC</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:7px">By site (all)</div>${siteBarHtml}</div>
+        <div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:7px">By trainer (all)</div>${trBarHtml}</div>
+      </div>
+    </div>
+    <div>
+      <div class="ov-head">&#127970; All Sessions by Site &amp; Month</div>
+      ${renderPivotTable(sites,sitePivot,cols,'Site')}
+    </div>
+    <div>
+      <div class="ov-head">&#128101; All Sessions by Main Trainer &amp; Month</div>
+      ${renderPivotTable(trainers,trainerPivot,cols,'Main Trainer')}
+    </div>
+    <div>
+      <div class="ov-head">&#9888;&#65039; Coverage Gaps</div>
+      <div class="ov-cards">
+        <div class="ov-card"><div class="ov-card-num" style="color:${ldBlank?'var(--warn)':'var(--accent)'}">${ldBlank}</div><div class="ov-card-label">LD Expert missing</div></div>
+        <div class="ov-card"><div class="ov-card-num" style="color:${autBlank?'var(--warn)':'var(--accent)'}">${autBlank}</div><div class="ov-card-label">Autism Expert missing</div></div>
+        <div class="ov-card"><div class="ov-card-num" style="color:${tbcCount?'var(--warn)':'var(--accent)'}">${tbcCount}</div><div class="ov-card-label">Trainer TBC</div></div>
+      </div>
+    </div>`;
+}
+
+// Expert co-trainers — uses ALL sessions
+function renderExperts(){
+  const ew=document.getElementById('expertsWrap');
+  const all=data;
+  const cols=all.length?buildMonthCols(all):[];
+  function expertBlock(experts,field,title){
+    if(!experts.length)return `<div class="expert-group"><div class="expert-group-head"><div class="expert-group-title">${escH(title)}</div><div style="display:flex;gap:6px"><button class="add-btn" onclick="showAddExpert('${field}')">+ Add</button><button class="add-btn" style="background:var(--surface3);color:var(--text);border:1px solid var(--border)" onclick="showBulkAddExpert('${field}')">+ Add Multiple</button></div></div><div style="padding:14px;font-size:11px;color:var(--text-dim)">No experts in this group yet.</div></div>`;
+    const pivot=pivotCount(all,r=>(r[field]&&r[field].trim())||null,cols);
+    // Build table with edit/delete buttons in name column
+    const colHeaders=cols.map(c=>`<th style="text-align:center;min-width:46px">${escH(c.label)}</th>`).join('');
+    const totalCol=cols.length?`<th style="text-align:center;min-width:40px">Total</th>`:'';
+    const rows=experts.map(name=>{
+      const inUse=all.some(r=>(r[field]||'').trim()===name);
+      const editBtn=`<button class="icon-btn" onclick="openEditExpertModal('${field}','${escH(name)}')" title="Edit name" style="font-size:11px">&#9998;</button>`;
+      const delBtn=`<button class="icon-btn del" onclick="deleteExpert('${field}','${escH(name)}')" title="${inUse?'Remove from list (sessions will retain the name)':'Remove expert'}" style="font-size:11px">✕</button>`;
+      const cells=cols.map(c=>{const v=(pivot[name]&&pivot[name][c.key])||0;return `<td class="${v?'cell-pos':'cell-zero'}">${v||'—'}</td>`;}).join('');
+      const total=cols.reduce((s,c)=>s+((pivot[name]&&pivot[name][c.key])||0),0);
+      const totalCell=cols.length?`<td style="text-align:center;font-weight:600;color:var(--text)">${total||'—'}</td>`:'';
+      return `<tr><td class="name-col"><span style="display:flex;align-items:center;justify-content:space-between">${escH(name)}<span style="display:flex;gap:2px;flex-shrink:0">${editBtn}${delBtn}</span></span></td>${cells}${totalCell}</tr>`;
+    }).join('');
+    const totalsRow=cols.length?`<tr class="total-row"><td class="name-col">Total</td>${cols.map(c=>{const v=experts.reduce((s,n)=>s+((pivot[n]&&pivot[n][c.key])||0),0);return `<td>${v||'—'}</td>`;}).join('')}<td>${experts.reduce((s,n)=>s+cols.reduce((ss,c)=>ss+((pivot[n]&&pivot[n][c.key])||0),0),0)||'—'}</td></tr>`:'';
+    const tableHtml=`<div class="pivot-wrap"><table class="pivot-table"><thead><tr><th class="name-col">Name</th>${colHeaders}${totalCol}</tr></thead><tbody>${rows}${totalsRow}</tbody></table></div>`;
+    return `<div class="expert-group"><div class="expert-group-head"><div class="expert-group-title">${escH(title)}</div><div style="display:flex;gap:6px"><button class="add-btn" onclick="showAddExpert('${field}')">+ Add</button><button class="add-btn" style="background:var(--surface3);color:var(--text);border:1px solid var(--border-hi)" onclick="showBulkAddExpert('${field}')">+ Add Multiple</button></div></div>${tableHtml}</div>`;
+  }
+  ew.innerHTML=`
+    <div>
+      <div class="ov-head">&#128101; Expert Co-trainer Sessions by Month <span style="font-size:10px;color:var(--text-dim);font-weight:400">(all sessions)</span></div>
+      <p style="font-size:11px;color:var(--text-dim);margin-bottom:14px">Edit a session to assign or change an expert. Counts include all session statuses.</p>
+      ${expertBlock(AUTISM_EXPERTS,'autExpert','Autism Experts')}
+    </div>
+    <div>${expertBlock(LD_EXPERTS,'ldExpert','Learning Disability Experts')}</div>`;
+}
+
+function showAddExpert(field){
+  const label=field==='autExpert'?'Autism Expert':'Learning Disability Expert';
+  const name=prompt('Add new '+label+' name:');
+  if(!name||!name.trim())return;
+  const n=name.trim();
+  if(field==='autExpert'){if(AUTISM_EXPERTS.includes(n)){toast('Already in list','warn');return;}AUTISM_EXPERTS.push(n);AUTISM_EXPERTS.sort();}
+  else{if(LD_EXPERTS.includes(n)){toast('Already in list','warn');return;}LD_EXPERTS.push(n);LD_EXPERTS.sort();}
+  updateStats();renderExperts();saveToCloud();toast(n+' added');
+}
+
+function showBulkAddExpert(field){
+  const label=field==='autExpert'?'Autism Experts':'Learning Disability Experts';
+  const raw=prompt('Add multiple '+label+' — enter one name per line:');
+  if(!raw||!raw.trim())return;
+  const names=raw.split('\n').map(s=>s.trim()).filter(Boolean);
+  const list=field==='autExpert'?AUTISM_EXPERTS:LD_EXPERTS;
+  let added=0,skipped=0;
+  names.forEach(n=>{if(list.includes(n)){skipped++;}else{list.push(n);added++;}});
+  list.sort();
+  updateStats();renderExperts();saveToCloud();
+  const msg=added+' added'+(skipped?' ('+skipped+' already existed)':'');
+  toast(msg,skipped&&!added?'warn':'success');
+}
+
+function deleteExpert(field,name){
+  const inUse=data.some(r=>(r[field]||'').trim()===name);
+  const msg=inUse
+    ?'Remove '+name+' from the expert list? They are assigned to session(s) — those assignments will not be changed.'
+    :'Remove '+name+' from the expert list?';
+  if(!confirm(msg))return;
+  if(field==='autExpert'){const i=AUTISM_EXPERTS.indexOf(name);if(i!==-1)AUTISM_EXPERTS.splice(i,1);}
+  else{const i=LD_EXPERTS.indexOf(name);if(i!==-1)LD_EXPERTS.splice(i,1);}
+  updateStats();renderExperts();saveToCloud();toast(name+' removed from list','warn');
+}
+
+let _editExpertField='',_editExpertOldName='';
+function openEditExpertModal(field,name){
+  _editExpertField=field;
+  _editExpertOldName=name;
+  const sessions=data.filter(r=>(r[field]||'').trim()===name);
+  document.getElementById('editExpertSub').textContent='Editing: '+name;
+  document.getElementById('editExpertInput').value=name;
+  const warnEl=document.getElementById('editExpertWarn');
+  if(sessions.length){
+    warnEl.textContent='This expert is assigned to '+sessions.length+' session'+(sessions.length!==1?'s':'')+'. Saving will update all of them.';
+    warnEl.style.display='block';
+  } else {
+    warnEl.style.display='none';
+  }
+  document.getElementById('editExpertModal').classList.add('open');
+  setTimeout(()=>document.getElementById('editExpertInput').focus(),50);
+}
+function closeEditExpertModal(){document.getElementById('editExpertModal').classList.remove('open');}
+document.getElementById('editExpertModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeEditExpertModal();});
+function saveEditExpert(){
+  const newName=document.getElementById('editExpertInput').value.trim();
+  if(!newName){toast('Name cannot be empty','error');return;}
+  if(newName===_editExpertOldName){closeEditExpertModal();return;}
+  const list=_editExpertField==='autExpert'?AUTISM_EXPERTS:LD_EXPERTS;
+  if(list.includes(newName)){toast('An expert with that name already exists','warn');return;}
+  // Update list
+  const i=list.indexOf(_editExpertOldName);
+  if(i!==-1)list[i]=newName;
+  list.sort();
+  // Update NAME_MAP if old name was mapped
+  Object.keys(NAME_MAP).forEach(k=>{if(NAME_MAP[k]===_editExpertOldName)NAME_MAP[k]=newName;});
+  // Update all session assignments
+  let updated=0;
+  data.forEach(r=>{
+    if((r[_editExpertField]||'').trim()===_editExpertOldName){r[_editExpertField]=newName;updated++;}
+  });
+  closeEditExpertModal();
+  updateStats();renderExperts();renderTable();saveToCloud();
+  const msg=updated?newName+' updated ('+updated+' session'+(updated!==1?'s':'')+' reassigned)':newName+' updated';
+  toast(msg);
+}
+
+// ── File inputs ───────────────────────────────────────────────────────────────
+function setupDropZone(dzId,inputId,selectedId,nameId,btnId,type){
+  const inp=document.getElementById(inputId);
+  const dz=document.getElementById(dzId);
+  inp.addEventListener('change',function(){
+    const f=this.files[0];if(!f)return;
+    document.getElementById(nameId).textContent=f.name;
+    document.getElementById(selectedId).style.display='flex';
+    document.getElementById(btnId).disabled=false;
+  });
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag-over');});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('drag-over'));
+  dz.addEventListener('drop',e=>{
+    e.preventDefault();dz.classList.remove('drag-over');
+    const f=e.dataTransfer.files[0];
+    const ok=type==='csv'?f&&f.name.toLowerCase().endsWith('.csv'):f&&(f.name.toLowerCase().endsWith('.xlsx')||f.name.toLowerCase().endsWith('.xls'));
+    if(ok){document.getElementById(nameId).textContent=f.name;document.getElementById(selectedId).style.display='flex';document.getElementById(btnId).disabled=false;dz._file=f;}
+    else toast('Wrong file type','error');
+  });
+}
+setupDropZone('dropZoneCSV','fileInputCSV','fileSelectedCSV','fileNameCSV','importBtnCSV','csv');
+setupDropZone('dropZoneXLSX','fileInputXLSX','fileSelectedXLSX','fileNameXLSX','importBtnXLSX','xlsx');
+
+// ── CSV parse ─────────────────────────────────────────────────────────────────
+function parseCSVText(text){
+  if(text.charCodeAt(0)===0xFEFF)text=text.slice(1);
+  const lines=text.split(/\r?\n/);
+  const headers=lines[0].split(',').map(h=>h.trim().toLowerCase());
+  const col=n=>headers.indexOf(n);
+  const iDate=col('date'),iSite=col('site'),iRoom=col('room'),iDay=col('day');
+  const iLD=col('learning disability expert-am'),iAut=col('autism expert-pm');
+  const iT=col('main trainer')!==-1?col('main trainer'):col('lead trainer');
+  const iS=col('completed');
+  if(iDate===-1||iSite===-1||iRoom===-1){toast('CSV missing date/site/room columns','error');return null;}
+  let records=[],skipped=0;
+  for(let i=1;i<lines.length;i++){
+    const r=lines[i].split(',');
+    if(r.length<3||!clean(r[iDate])){if(lines[i].trim())skipped++;continue;}
+    records.push({
+      date:clean(r[iDate]),day:iDay!==-1?clean(r[iDay]):'',
+      site:clean(r[iSite]),room:clean(r[iRoom]),
+      ldExpert:iLD!==-1?expandName(clean(r[iLD])):'',
+      autExpert:iAut!==-1?expandName(clean(r[iAut])):'',
+      trainer:(iT!==-1&&clean(r[iT]))?clean(r[iT]):'TBC',
+      status:(iS!==-1&&clean(r[iS])==='Upcoming')?'keep':'cancelled'
+    });
+  }
+  return{records,skipped};
+}
+
+// ── Excel parse ───────────────────────────────────────────────────────────────
+function parseXLSXData(ab){
+  const wb=XLSX.read(ab,{type:'array'});
+  const ws=wb.Sheets[wb.SheetNames[0]];
+  const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+  if(!rows.length)return null;
+  const headers=rows[0].map(h=>String(h).trim().toLowerCase());
+  const col=n=>headers.indexOf(n);
+  const iDate=col('date'),iSite=col('site'),iRoom=col('room'),iDay=col('day');
+  const iLD=col('learning disability expert-am'),iAut=col('autism expert-pm');
+  const iT=col('main trainer')!==-1?col('main trainer'):col('lead trainer');
+  const iS=col('completed');
+  if(iDate===-1||iSite===-1||iRoom===-1){
+    // Try to be flexible - look for partial matches
+    toast('Excel: columns not recognised. Expected: Date, Site, Room, Main Trainer, Completed','error');return null;
+  }
+  let records=[],skipped=0;
+  for(let i=1;i<rows.length;i++){
+    const r=rows[i];
+    const dateRaw=String(r[iDate]||'').trim();
+    if(!dateRaw){skipped++;continue;}
+    // Handle Excel date serial numbers
+    let dateStr=dateRaw;
+    if(/^\d{5}$/.test(dateRaw)){
+      const d=XLSX.SSF.parse_date_code(parseInt(dateRaw));
+      dateStr=String(d.d).padStart(2,'0')+' '+MONTH_NAMES[d.m-1]+' '+d.y;
+    }
+    records.push({
+      date:dateStr,day:iDay!==-1?String(r[iDay]||'').trim():'',
+      site:String(r[iSite]||'').trim(),room:String(r[iRoom]||'').trim(),
+      ldExpert:iLD!==-1?expandName(String(r[iLD]||'').trim()):'',
+      autExpert:iAut!==-1?expandName(String(r[iAut]||'').trim()):'',
+      trainer:(iT!==-1&&String(r[iT]||'').trim())?String(r[iT]).trim():'TBC',
+      status:(iS!==-1&&String(r[iS]||'').trim()==='Upcoming')?'keep':'cancelled'
+    });
+  }
+  return{records,skipped};
+}
+
+let _pendingSkipped=0;
+function previewImport(type){
+  const inputId=type==='csv'?'fileInputCSV':'fileInputXLSX';
+  const dzId=type==='csv'?'dropZoneCSV':'dropZoneXLSX';
+  const fi=document.getElementById(inputId);
+  const f=(fi.files&&fi.files[0])||document.getElementById(dzId)._file;
+  if(!f){toast('Please select a file first','warn');return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    let result;
+    if(type==='csv')result=parseCSVText(e.target.result);
+    else result=parseXLSXData(new Uint8Array(e.target.result));
+    if(!result)return;
+    const{records,skipped}=result;
+    let nc=0,rc=0;pendingImport=[];
+    records.forEach(rec=>{
+      const idx=data.findIndex(x=>x.date===rec.date&&x.site===rec.site&&x.room===rec.room);
+      if(idx!==-1)rc++;else nc++;
+      pendingImport.push({...rec,_ei:idx});
+    });
+    _pendingSkipped=skipped;
+    document.getElementById('modalNew').textContent=nc;
+    document.getElementById('modalReplace').textContent=rc;
+    document.getElementById('modalSkipped').textContent=skipped;
+    document.getElementById('modalTotal').textContent=data.length-rc+nc+rc;
+    document.getElementById('confirmModal').classList.add('open');
+  };
+  if(type==='csv')reader.readAsText(f);
+  else reader.readAsArrayBuffer(f);
+}
+
+function confirmImport(){
+  pendingImport.forEach(({_ei,...r})=>{if(_ei!==-1)data[_ei]=r;else{r._id=_nextId++;data.push(r);}});
+normalizeAllDates();
+  data.sort((a,b)=>dateToNum(a.date)-dateToNum(b.date));
+  closeConfirmModal();updateStats();renderTable();refreshActive();saveToCloud();
+  toast('Imported '+pendingImport.length+' session'+(pendingImport.length!==1?'s':''));
+  pendingImport=[];
+}
+function closeConfirmModal(){document.getElementById('confirmModal').classList.remove('open');}
+document.getElementById('confirmModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeConfirmModal();});
+
+// ── Cloud ─────────────────────────────────────────────────────────────────────
+async function syncToSheets(){
+  try{
+    const payload=encodeURIComponent(JSON.stringify({sessions:data,autismExperts:AUTISM_EXPERTS,ldExperts:LD_EXPERTS}));
+    await fetch(SHEETS_URL+'?data='+payload,{method:'GET',mode:'no-cors'});
+  }catch(e){console.warn('Google Sheets sync failed',e);}
+}
+let _ghFileSha=null;
+async function saveToGitHub(){
+  try{
+    const payload=JSON.stringify({sessions:data,autismExperts:AUTISM_EXPERTS,ldExperts:LD_EXPERTS,lastUpdated:new Date().toISOString()},null,2);
+    const encoded=btoa(unescape(encodeURIComponent(payload)));
+    const body={message:'sync: update session data',content:encoded};
+    if(_ghFileSha)body.sha=_ghFileSha;
+    const res=await fetch(GH_API,{method:'PUT',headers:{'Authorization':'token '+GH_TOKEN,'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!res.ok)throw new Error(await res.text());
+    const json=await res.json();
+    _ghFileSha=json.content.sha;
+    return true;
+  }catch(e){console.warn('GitHub sync failed',e);return false;}
+}
+async function loadFromGitHub(){
+  try{
+    const res=await fetch(GH_API,{headers:{'Authorization':'token '+GH_TOKEN}});
+    if(!res.ok)return null;
+    const json=await res.json();
+    _ghFileSha=json.sha;
+    const decoded=decodeURIComponent(escape(atob(json.content.replace(/
+/g,''))));
+    return JSON.parse(decoded);
+  }catch(e){console.warn('GitHub load failed',e);return null;}
+}
+async function saveToCloud(){
+  setSyncStatus('syncing','Syncing…');
+  let saved=false;
+  // Try GitHub first
+  saved=await saveToGitHub();
+  if(saved){
+    setSyncStatus('synced','Synced '+new Date().toLocaleTimeString('en-GB'));
+    syncToSheets();
+    return;
+  }
+  // Fallback to JSONbin
+  try{
+    const res=await fetch(BIN_URL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':MASTER_KEY},body:JSON.stringify({sessions:data,autismExperts:AUTISM_EXPERTS,ldExperts:LD_EXPERTS,lastUpdated:new Date().toISOString()})});
+    if(!res.ok)throw new Error();
+    setSyncStatus('synced','Synced (fallback) '+new Date().toLocaleTimeString('en-GB'));
+    syncToSheets();
+  }catch(e){setSyncStatus('error','Sync failed');toast('Cloud sync failed','error');}
+}
+async function loadFromCloud(){
+  setSyncStatus('syncing','Loading…');
+  try{
+    const res=await fetch(BIN_URL+'/latest',{headers:{'X-Master-Key':MASTER_KEY}});
+    if(!res.ok)throw new Error();
+    const json=await res.json();
+    const sessions=json?.record?.sessions;
+    if(!Array.isArray(sessions)||!sessions.length)throw new Error('Empty');
+    data=sessions;
+normalizeAllDates();
+    assignIds();
+    if(Array.isArray(json?.record?.autismExperts))AUTISM_EXPERTS=json.record.autismExperts;
+    if(Array.isArray(json?.record?.ldExperts))LD_EXPERTS=json.record.ldExperts;
+    updateStats();renderTable();refreshActive();
+    setSyncStatus('synced','Loaded '+new Date().toLocaleTimeString('en-GB'));
+    toast('Loaded '+data.length+' sessions from cloud');
+  }catch(e){setSyncStatus('error','Cloud unavailable');toast('Cloud unavailable','warn');}
+}
+function clearAll(){
+  if(!data.length){toast('Nothing to clear','warn');return;}
+  if(!confirm('Clear all '+data.length+' sessions?'))return;
+  data=[];updateStats();renderTable();refreshActive();saveToCloud();toast('All cleared','warn');
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+(async function init(){
+  data=JSON.parse(JSON.stringify(EMBEDDED));
+normalizeAllDates();
+  assignIds();
+  updateStats();renderTable();
+  setSyncStatus('synced','Loaded from file');
+  try{
+    // Try GitHub first
+    const ghData=await loadFromGitHub();
+    if(ghData&&ghData.sessions){
+      data=ghData.sessions;
+      if(ghData.autismExperts&&ghData.autismExperts.length)AUTISM_EXPERTS=ghData.autismExperts;
+      if(ghData.ldExperts&&ghData.ldExperts.length)LD_EXPERTS=ghData.ldExperts;
+      updateStats();renderTable();refreshActive();
+      setSyncStatus('synced','Loaded '+new Date().toLocaleTimeString('en-GB'));
+      return;
+    }
+    const res=await fetch(BIN_URL+'/latest',{headers:{'X-Master-Key':MASTER_KEY}});
+    if(!res.ok)throw new Error();
+    const json=await res.json();
+    const sessions=json?.record?.sessions;
+    if(Array.isArray(sessions)&&sessions.length){
+      data=sessions;
+normalizeAllDates()
+      assignIds();
+      if(Array.isArray(json?.record?.autismExperts))AUTISM_EXPERTS=json.record.autismExperts;
+      if(Array.isArray(json?.record?.ldExperts))LD_EXPERTS=json.record.ldExperts;
+      updateStats();renderTable();refreshActive();
+      setSyncStatus('synced','Loaded '+new Date().toLocaleTimeString('en-GB'));
+    }
+  }catch(e){refreshActive();}
+})();
+
+function updateHealthIndicator(){
+  const bad = data.filter(r => isBadDate(r.date)).length;
+  const el = document.getElementById("healthIndicator");
+  if(!el) return;
+
+  if(bad === 0){
+    el.textContent = "✅ Healthy";
+    el.style.color = "var(--accent)";
+  }
+  else if(bad < 5){
+    el.textContent = `⚠️ ${bad} issues`;
+    el.style.color = "var(--warn)";
+  }
+  else{
+    el.textContent = `❌ ${bad} errors`;
+    el.style.color = "var(--danger)";
+  }
+}
+</script>
+</body>
+</html>
