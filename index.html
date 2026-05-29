@@ -1966,10 +1966,9 @@ function confirmImport(){
 
 // ── Cloud ─────────────────────────────────────────────────────────────────────
 async function syncToSheets(){
-  try{
-    const payload=encodeURIComponent(JSON.stringify({sessions:data,autismExperts:AUTISM_EXPERTS,ldExperts:LD_EXPERTS}));
-    await fetch(SHEETS_URL+'?data='+payload,{method:'GET',mode:'no-cors'});
-  }catch(e){console.warn('Google Sheets sync failed',e);}
+  // Sheets sync via GET is disabled (URL too long for 198 sessions)
+  // The Google Apps Script handles this independently via its own polling
+  console.log('Sheets sync skipped (handled by Apps Script)');
 }
 
 
@@ -2002,26 +2001,28 @@ async function saveSession(sessionId){
   if(!r)return;
   try{
     setSyncStatus('syncing','Syncing…');
-    // Read current cloud state
     const getRes=await fetch(FIREBASE_URL);
-    var cloudData={sessions:[],autismExperts:AUTISM_EXPERTS,ldExperts:LD_EXPERTS,
-      extraTrainers:EXTRA_TRAINERS,capacityRules:{jodyMonthly:CAPACITY.JODY_MAX_MONTHLY,
-      biliWeekly:CAPACITY.BILI_MAX_WEEKLY,combinedWeekly:CAPACITY.COMBINED_MAX_WEEKLY,
-      jodyUnavail:CAPACITY.JODY_UNAVAILABLE,biliUnavail:CAPACITY.BILI_UNAVAILABLE}};
-    if(getRes.ok){
-      const existing=await getRes.json();
-      if(existing&&Array.isArray(existing.sessions)) cloudData=existing;
+    if(!getRes.ok)throw new Error('GET failed: '+getRes.status);
+    var cloudData=await getRes.json();
+    if(!cloudData||!Array.isArray(cloudData.sessions)){
+      // Firebase empty — do a full save instead
+      console.log('Firebase empty, doing full save');
+      await saveToCloud();
+      return;
     }
-    // Update just this session in the array
     const idx=cloudData.sessions.findIndex(function(x){return x._id===sessionId;});
     if(idx>=0) cloudData.sessions[idx]=r;
     else cloudData.sessions.push(r);
     cloudData.lastUpdated=new Date().toISOString();
-    // Write back
     const putRes=await fetch(FIREBASE_URL,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(cloudData)});
-    if(!putRes.ok)throw new Error();
+    if(!putRes.ok)throw new Error('PUT failed: '+putRes.status);
     setSyncStatus('synced','Synced ✓ '+new Date().toLocaleTimeString('en-GB'));
-  }catch(e){setSyncStatus('error','Sync failed');console.warn('saveSession failed',e);}
+    console.log('Saved session',sessionId,'to Firebase');
+  }catch(e){
+    setSyncStatus('error','Sync failed — '+e.message);
+    toast('Sync failed: '+e.message,'error');
+    console.error('saveSession failed:',e);
+  }
 }
 
 // Delete a single session — read Firebase, remove this session, write back
@@ -2066,7 +2067,7 @@ async function saveToCloud(){
     if(!res.ok)throw new Error();
     setSyncStatus('synced','Synced ✓ '+new Date().toLocaleTimeString('en-GB'));
     syncToSheets();
-  }catch(e){setSyncStatus('error','Sync failed');toast('Sync failed','error');console.warn(e);}
+  }catch(e){setSyncStatus('error','Sync failed — '+e.message);toast('Sync failed: '+e.message,'error');console.error('saveToCloud failed:',e);}
 }
 async function loadFromCloud(){
   setSyncStatus('syncing','Loading…');
@@ -2149,7 +2150,8 @@ async function loadFromCloud(){
       sessions=Object.values(json).filter(function(x){return x&&x.date;});
     }
     if(!sessions||sessions.length<5){
-      console.log('Firebase empty/sparse, keeping embedded data (use Restore to push)');
+      console.log('Firebase empty — pushing embedded data now');
+      saveToCloud();
       return;
     }
 
