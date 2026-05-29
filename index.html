@@ -886,27 +886,31 @@ function autoUpdateStatuses(skipSave){
   const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   const cutoff=new Date(today.getFullYear(),today.getMonth(),today.getDate(),16,30); // 4:30pm
   let changed=false;
+  let changedIds=[];
   data.forEach(r=>{
-    if(r.status==='cancelled')return; // never auto-change cancelled
+    if(r.status==='cancelled')return;
     const d=parseDateSafe(r.date);
     if(!d)return;
     const sessionDay=new Date(d.getFullYear(),d.getMonth(),d.getDate());
     if(sessionDay.getTime()===today.getTime()){
-      // Today — in-progress until 4:30, then completed
       const newStatus=now>=cutoff?'completed':'in-progress';
-      if(r.status!==newStatus){r.status=newStatus;changed=true;}
+      if(r.status!==newStatus){r.status=newStatus;changed=true;if(r._id)changedIds.push(r._id);}
     } else if(sessionDay<today){
-      // Past — completed
-      if(r.status!=='completed'){r.status='completed';changed=true;}
+      if(r.status!=='completed'){r.status='completed';changed=true;if(r._id)changedIds.push(r._id);}
     } else {
-      // Future — upcoming (scheduled)
-      if(r.status==='in-progress'||r.status==='completed'){r.status='scheduled';changed=true;}
+      if(r.status==='in-progress'||r.status==='completed'){r.status='scheduled';changed=true;if(r._id)changedIds.push(r._id);}
     }
   });
   // Note: TBC capacity status (no-capacity/scheduled) is calculated live at render time
   // and only persisted when manually set by the user
   refreshCapacity();
-  if(changed){updateStats();renderTable();refreshActive();if(!skipSave)saveToCloud();}
+  if(changed){
+    updateStats();renderTable();refreshActive();
+    if(!skipSave){
+      // Save only the sessions whose status changed, not the whole dataset
+      changedIds.forEach(function(id){saveSession(id);});
+    }
+  }
 }
 
 // Tab switching
@@ -1666,7 +1670,7 @@ function showAddExpert(field){
   const n=name.trim();
   if(field==='autExpert'){if(AUTISM_EXPERTS.includes(n)){toast('Already in list','warn');return;}AUTISM_EXPERTS.push(n);AUTISM_EXPERTS.sort();}
   else{if(LD_EXPERTS.includes(n)){toast('Already in list','warn');return;}LD_EXPERTS.push(n);LD_EXPERTS.sort();}
-  updateStats();renderExperts();saveToCloud();toast(n+' added');
+  updateStats();renderExperts();saveMeta();toast(n+' added');
 }
 
 function showBulkAddExpert(field){
@@ -1678,7 +1682,7 @@ function showBulkAddExpert(field){
   let added=0,skipped=0;
   names.forEach(n=>{if(list.includes(n)){skipped++;}else{list.push(n);added++;}});
   list.sort();
-  updateStats();renderExperts();saveToCloud();
+  updateStats();renderExperts();saveMeta();
   const msg=added+' added'+(skipped?' ('+skipped+' already existed)':'');
   toast(msg,skipped&&!added?'warn':'success');
 }
@@ -1691,7 +1695,7 @@ function deleteExpert(field,name){
   if(!confirm(msg))return;
   if(field==='autExpert'){const i=AUTISM_EXPERTS.indexOf(name);if(i!==-1)AUTISM_EXPERTS.splice(i,1);}
   else{const i=LD_EXPERTS.indexOf(name);if(i!==-1)LD_EXPERTS.splice(i,1);}
-  updateStats();renderExperts();saveToCloud();toast(name+' removed from list','warn');
+  updateStats();renderExperts();saveMeta();toast(name+' removed from list','warn');
 }
 
 let _editExpertField='',_editExpertOldName='';
@@ -2115,23 +2119,14 @@ async function loadFromCloud(){
       sessions=Object.values(json).filter(function(x){return x&&x.date;});
     }
     if(!sessions||sessions.length<5){
-      console.log('Firebase empty/sparse, pushing embedded data');
-      saveToCloud();
+      console.log('Firebase empty/sparse, keeping embedded data (use Restore to push)');
       return;
     }
-    // If data came from old flat format (json.sessions array), migrate to new format
-    if(json&&json.sessions&&Array.isArray(json.sessions)){
-      console.log('Migrating from old Firebase format to per-session format');
-      data=sessions;
-      data.forEach(function(r){if(!r._id)r._id=_nextId++;});
-      normalizeAllDates();
-      saveToCloud(); // full save in new format
-      return;
-    }
+
     const cancelRatio=sessions.filter(function(r){return r.status==='cancelled';}).length/sessions.length;
     if(cancelRatio>0.5){
-      console.log('Firebase data corrupted, using embedded');
-      saveToCloud();
+      console.log('Firebase data looks corrupted, using embedded data instead');
+      setSyncStatus('error','Cloud data issue — use Restore if needed');
       return;
     }
     data=sessions;
