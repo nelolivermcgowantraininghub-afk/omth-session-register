@@ -766,7 +766,10 @@ th.sorted.desc .sort-arrow::after{content:'↓'}
 <div id="toast-container"></div>
 
 <script>
-const FIREBASE_URL='https://omth-sessions-default-rtdb.europe-west1.firebasedatabase.app/sessions.json';
+const FIREBASE_ROOT='https://omth-sessions-default-rtdb.europe-west1.firebasedatabase.app';
+const FIREBASE_URL=FIREBASE_ROOT+'/sessions.json'; // kept for legacy compat
+const FIREBASE_SESSIONS=FIREBASE_ROOT+'/sessions';
+const FIREBASE_META=FIREBASE_ROOT+'/meta.json';
 const SHEETS_URL='https://script.google.com/macros/s/AKfycbz74NtgUfU04cVnvKojdA8UzkpkZN_M9aCEcG-Fb5P0JYs16mkl4aErfZqH7HOWWI4beQ/exec';
 const SITE_COLORS=['c0','c1','c2','c3','c4','c5','c6','c7'];
 const MONTH_NAMES=['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -878,7 +881,7 @@ function isBadDate(d){
 }
 
 // ── Auto-update session statuses based on current date/time ──────────────────
-function autoUpdateStatuses(){
+function autoUpdateStatuses(skipSave){
   const now=new Date();
   const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   const cutoff=new Date(today.getFullYear(),today.getMonth(),today.getDate(),16,30); // 4:30pm
@@ -903,7 +906,7 @@ function autoUpdateStatuses(){
   // Note: TBC capacity status (no-capacity/scheduled) is calculated live at render time
   // and only persisted when manually set by the user
   refreshCapacity();
-  if(changed){updateStats();renderTable();refreshActive();saveToCloud();}
+  if(changed){updateStats();renderTable();refreshActive();if(!skipSave)saveToCloud();}
 }
 
 // Tab switching
@@ -1305,7 +1308,10 @@ function sortBy(f){if(sortField===f)sortDir*=-1;else{sortField=f;sortDir=1;}rend
 function deleteRow(rid){
   if(!confirm('Delete this session permanently?'))return;
   const i=findById(rid); if(i===-1)return;
-  data.splice(i,1);updateStats();renderTable();refreshActive();saveToCloud();toast('Session removed','warn');
+  const deletedId=data[i]._id;
+  data.splice(i,1);
+  deleteSessionFromCloud(deletedId);
+  updateStats();renderTable();refreshActive();toast('Session removed','warn');
 }
 function refreshActive(){if(activeTab==='overview')renderOverview();if(activeTab==='experts')renderExperts();}
 
@@ -1406,7 +1412,9 @@ function saveEdit(){
     delete r._manualStatus;
     r.status=newStatus;
   }
-  closeEditModal();updateStats();renderTable();refreshActive();saveToCloud();toast('Session updated');
+  var editedId=r._id;
+  closeEditModal();updateStats();renderTable();refreshActive();
+  saveSession(editedId);toast('Session updated');
 }
 document.getElementById('editModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeEditModal();});
 
@@ -1980,91 +1988,99 @@ function restoreEmbedded(){
   toast('Restored '+data.length+' sessions from built-in data');
 }
 
+// Save a single session by its _id (field-level sync — no conflicts)
+async function saveSession(sessionId){
+  const r=data.find(function(x){return x._id===sessionId;});
+  if(!r)return;
+  try{
+    setSyncStatus('syncing','Syncing…');
+    const url=FIREBASE_SESSIONS+'/'+sessionId+'.json';
+    const res=await fetch(url,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(r)});
+    if(!res.ok)throw new Error();
+    setSyncStatus('synced','Synced ✓ '+new Date().toLocaleTimeString('en-GB'));
+  }catch(e){setSyncStatus('error','Sync failed');console.warn('saveSession failed',e);}
+}
+// Delete a single session from Firebase
+async function deleteSessionFromCloud(sessionId){
+  try{
+    await fetch(FIREBASE_SESSIONS+'/'+sessionId+'.json',{method:'DELETE'});
+  }catch(e){console.warn('deleteSession failed',e);}
+}
+// Save just meta (experts, capacity rules)
+async function saveMeta(){
+  try{
+    const meta={autismExperts:AUTISM_EXPERTS,ldExperts:LD_EXPERTS,extraTrainers:EXTRA_TRAINERS,
+      capacityRules:{jodyMonthly:CAPACITY.JODY_MAX_MONTHLY,biliWeekly:CAPACITY.BILI_MAX_WEEKLY,
+        combinedWeekly:CAPACITY.COMBINED_MAX_WEEKLY,jodyUnavail:CAPACITY.JODY_UNAVAILABLE,
+        biliUnavail:CAPACITY.BILI_UNAVAILABLE},lastUpdated:new Date().toISOString()};
+    await fetch(FIREBASE_META,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(meta)});
+  }catch(e){console.warn('saveMeta failed',e);}
+}
+// Full save — used for bulk ops (import, restore). Saves all sessions + meta.
 async function saveToCloud(){
   setSyncStatus('syncing','Syncing…');
   try{
-    const payload={sessions:data,autismExperts:AUTISM_EXPERTS,ldExperts:LD_EXPERTS,extraTrainers:EXTRA_TRAINERS,capacityRules:{jodyMonthly:CAPACITY.JODY_MAX_MONTHLY,biliWeekly:CAPACITY.BILI_MAX_WEEKLY,combinedWeekly:CAPACITY.COMBINED_MAX_WEEKLY,jodyUnavail:CAPACITY.JODY_UNAVAILABLE,biliUnavail:CAPACITY.BILI_UNAVAILABLE},lastUpdated:new Date().toISOString()};
-    const res=await fetch(FIREBASE_URL,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const sessionsObj={};
+    data.forEach(function(r){if(r._id)sessionsObj[r._id]=r;});
+    const res=await fetch(FIREBASE_SESSIONS+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(sessionsObj)});
     if(!res.ok)throw new Error();
+    await saveMeta();
+    _lastLoadedTs=new Date().toISOString();
     setSyncStatus('synced','Synced ✓ '+new Date().toLocaleTimeString('en-GB'));
     syncToSheets();
   }catch(e){setSyncStatus('error','Sync failed');toast('Sync failed','error');console.warn(e);}
 }
 async function loadFromCloud(){
   setSyncStatus('syncing','Loading…');
-
   try{
-    const res = await fetch(FIREBASE_URL);
-    if(!res.ok) throw new Error();
-
-    const json = await res.json();
-    const sessions = json?.sessions;
-
-    // ✅ FIXED: do NOT crash on empty
-    if(!Array.isArray(sessions)){
-      console.warn("No sessions from cloud, keeping current data");
-      setSyncStatus('synced','No cloud data');
-      return;
+    // Load sessions (now stored as object keyed by ID)
+    const res=await fetch(FIREBASE_SESSIONS+'.json');
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const json=await res.json();
+    // Handle both new format (object) and old format (array in .sessions)
+    var sessions;
+    if(json&&typeof json==='object'&&!Array.isArray(json)&&json.sessions&&Array.isArray(json.sessions)){
+      sessions=json.sessions; // old format
+    } else if(json&&typeof json==='object'&&!Array.isArray(json)){
+      sessions=Object.values(json).filter(function(x){return x&&x.date;}); // new format
     }
-
-    data = sessions;
-
-    // Fix statuses — migrate old values
-    const cancelledCount = data.filter(r => r.status === 'cancelled').length;
-    const totalCount = data.length;
-    // If >70% are cancelled, it's corrupted data from old bug — reset all to scheduled
-    const massCancel = totalCount > 10 && (cancelledCount / totalCount) > 0.4;
-    var now=new Date();
-    data.forEach(r => {
-      if (r.status === 'keep') r.status = 'scheduled';
-      if (r.status === 'ongoing') r.status = 'in-progress';
-      if (massCancel && r.status === 'cancelled') r.status = 'scheduled';
-      // Belt-and-braces: if a future session is marked cancelled but was never
-      // manually cancelled (no cancel flag), reset it to scheduled
-      else if(!massCancel && r.status === 'cancelled') {
-        var d = parseDateSafe(r.date);
-        if(d && d > now && !r._manuallyCancelled) r.status = 'scheduled';
-      }
+    if(!sessions||!sessions.length){
+      setSyncStatus('synced','No cloud data');return;
+    }
+    data=sessions;
+    const cancelledCount=data.filter(function(r){return r.status==='cancelled';}).length;
+    const massCancel=data.length>10&&(cancelledCount/data.length)>0.4;
+    var now2=new Date();
+    data.forEach(function(r){
+      if(r.status==='keep')r.status='scheduled';
+      if(r.status==='ongoing')r.status='in-progress';
+      if(massCancel&&r.status==='cancelled')r.status='scheduled';
+      if(r.status==='no-capacity'&&(!r.trainer||r.trainer==='TBC')&&!r._manualStatus)r.status='scheduled';
+      if(!r._id)r._id=_nextId++;
     });
-
     normalizeAllDates();
-
-    // ✅ Ensure IDs
-    data.forEach(r => {
-      if(!r._id){
-        r._id = _nextId++;
+    // Load meta
+    try{
+      const mres=await fetch(FIREBASE_META);
+      if(mres.ok){
+        const meta=await mres.json();
+        if(Array.isArray(meta?.autismExperts))AUTISM_EXPERTS=meta.autismExperts;
+        if(Array.isArray(meta?.ldExperts))LD_EXPERTS=meta.ldExperts;
+        if(Array.isArray(meta?.extraTrainers))EXTRA_TRAINERS=meta.extraTrainers;
+        if(meta?.capacityRules){
+          if(meta.capacityRules.jodyMonthly)CAPACITY.JODY_MAX_MONTHLY=meta.capacityRules.jodyMonthly;
+          if(meta.capacityRules.biliWeekly)CAPACITY.BILI_MAX_WEEKLY=meta.capacityRules.biliWeekly;
+          if(meta.capacityRules.combinedWeekly)CAPACITY.COMBINED_MAX_WEEKLY=meta.capacityRules.combinedWeekly;
+          if(Array.isArray(meta.capacityRules.jodyUnavail))CAPACITY.JODY_UNAVAILABLE=meta.capacityRules.jodyUnavail;
+          if(Array.isArray(meta.capacityRules.biliUnavail))CAPACITY.BILI_UNAVAILABLE=meta.capacityRules.biliUnavail;
+        }
       }
-    });
-
-    refreshCapacity();
-    autoUpdateStatuses();
-
-    if(Array.isArray(json?.autismExperts)) AUTISM_EXPERTS = json.autismExperts;
-    if(Array.isArray(json?.ldExperts)) LD_EXPERTS = json.ldExperts;
-    if(Array.isArray(json?.extraTrainers)) EXTRA_TRAINERS = json.extraTrainers;
-    if(json?.capacityRules){
-      if(json.capacityRules.jodyMonthly) CAPACITY.JODY_MAX_MONTHLY=json.capacityRules.jodyMonthly;
-      if(json.capacityRules.biliWeekly) CAPACITY.BILI_MAX_WEEKLY=json.capacityRules.biliWeekly;
-      if(json.capacityRules.combinedWeekly) CAPACITY.COMBINED_MAX_WEEKLY=json.capacityRules.combinedWeekly;
-      if(Array.isArray(json.capacityRules.jodyUnavail)) CAPACITY.JODY_UNAVAILABLE=json.capacityRules.jodyUnavail;
-      if(Array.isArray(json.capacityRules.biliUnavail)) CAPACITY.BILI_UNAVAILABLE=json.capacityRules.biliUnavail;
-    }
-
-    // ✅ RESET FILTERS (important)
-    document.getElementById('filterStatus').value = '';
-
-    updateStats();
-    renderTable();
-    refreshActive();
-
+    }catch(e){console.warn('meta load failed',e);}
+    refreshCapacity();autoUpdateStatuses(true);
+    document.getElementById('filterStatus').value='';
+    updateStats();renderTable();refreshActive();
     setSyncStatus('synced','Loaded '+data.length+' sessions');
-    toast('Loaded '+data.length+' sessions from cloud');
-
-  }catch(e){
-    console.warn(e);
-    setSyncStatus('error','Cloud unavailable');
-    toast('Cloud unavailable','warn');
-  }
+  }catch(e){setSyncStatus('error','Load failed');console.warn('loadFromCloud failed',e);}
 }
 // ── Init ──────────────────────────────────────────────────────────────────────
 (async function init(){
@@ -2084,33 +2100,33 @@ async function loadFromCloud(){
 
   // Try Firebase — only use it if it has valid non-corrupted data
   try{
-    const res=await fetch(FIREBASE_URL);
+    const res=await fetch(FIREBASE_SESSIONS+'.json');
     if(!res.ok)throw new Error('HTTP '+res.status);
     const json=await res.json();
-    const sessions=json&&json.sessions;
-    if(!Array.isArray(sessions)||sessions.length<10){
-      // Firebase empty or near-empty — push our embedded data up
+    // Handle both old format (json.sessions array) and new format (object keyed by ID)
+    var sessions;
+    if(json&&typeof json==='object'&&!Array.isArray(json)&&json.sessions&&Array.isArray(json.sessions)){
+      sessions=json.sessions;
+    } else if(json&&typeof json==='object'&&!Array.isArray(json)){
+      sessions=Object.values(json).filter(function(x){return x&&x.date;});
+    }
+    if(!sessions||sessions.length<5){
       console.log('Firebase empty/sparse, pushing embedded data');
       saveToCloud();
       return;
     }
-    // Check corruption: if >50% cancelled, the data is bad
-    const cancelRatio=sessions.filter(r=>r.status==='cancelled').length/sessions.length;
+    const cancelRatio=sessions.filter(function(r){return r.status==='cancelled';}).length/sessions.length;
     if(cancelRatio>0.5){
-      console.log('Firebase data corrupted ('+Math.round(cancelRatio*100)+'% cancelled), using embedded');
-      saveToCloud(); // push clean data up
+      console.log('Firebase data corrupted, using embedded');
+      saveToCloud();
       return;
     }
-    // Data looks good — use it
     data=sessions;
-    data.forEach(r=>{
+    data.forEach(function(r){
       if(r.status==='keep')r.status='scheduled';
       if(r.status==='ongoing')r.status='in-progress';
       if(!r._id)r._id=_nextId++;
-      // Reset any auto-saved no-capacity — display is now calculated live
-      if(r.status==='no-capacity'&&(!r.trainer||r.trainer==='TBC')&&!r._manualStatus){
-        r.status='scheduled';
-      }
+      if(r.status==='no-capacity'&&(!r.trainer||r.trainer==='TBC')&&!r._manualStatus)r.status='scheduled';
     });
     normalizeAllDates();
     if(Array.isArray(json.autismExperts))AUTISM_EXPERTS=json.autismExperts;
@@ -2127,6 +2143,7 @@ async function loadFromCloud(){
     autoUpdateStatuses();
     document.getElementById('filterStatus').value='';
     updateStats();renderTable();refreshActive();
+    _lastLoadedTs=json.lastUpdated||'';
     setSyncStatus('synced','Loaded '+data.length+' sessions');
     console.log('Loaded '+data.length+' sessions from Firebase');
   }catch(e){
@@ -2136,29 +2153,49 @@ async function loadFromCloud(){
 })();
 
 
-setInterval(autoUpdateStatuses,60000);
+setInterval(function(){autoUpdateStatuses(false);},60000);
 
 var _lastCloudTs='';
+var _lastLoadedTs='';
+// Track known session IDs and their last-modified state for smart polling
+var _sessionSnapshots={};
 async function pollCloud(){
   try{
-    var res=await fetch(FIREBASE_URL+'?t='+Date.now());
+    // Fetch just the sessions object to detect per-session changes
+    var res=await fetch(FIREBASE_SESSIONS+'.json?shallow=true&t='+Date.now());
     if(!res.ok)return;
-    var json=await res.json();
-    var ts=(json&&json.lastUpdated)||'';
-    if(ts&&ts!==_lastCloudTs&&_lastCloudTs!==''){
-      _lastCloudTs=ts;
-      var sessions=json.sessions;
-      if(Array.isArray(sessions)&&sessions.length){
-        data=sessions;
-        var cc=data.filter(function(r){return r.status==='cancelled';}).length;var mc=data.length>10&&(cc/data.length)>0.4;data.forEach(function(r){if(r.status==='keep')r.status='scheduled';if(r.status==='ongoing')r.status='in-progress';if(mc&&r.status==='cancelled')r.status='scheduled';if(!r._id)r._id=_nextId++;});
-        normalizeAllDates();
-        if(Array.isArray(json.autismExperts))AUTISM_EXPERTS=json.autismExperts;
-        if(Array.isArray(json.ldExperts))LD_EXPERTS=json.ldExperts;
-        refreshCapacity();autoUpdateStatuses();updateStats();renderTable();refreshActive();
-        setSyncStatus('synced','Live '+new Date().toLocaleTimeString('en-GB'));
-        console.log('Realtime update received');
-      }
-    } else if(!_lastCloudTs){_lastCloudTs=ts;}
+    var shallowJson=await res.json();
+    if(!shallowJson||typeof shallowJson!=='object')return;
+    // shallow=true returns {id: true} — compare keys to detect adds/deletes
+    var remoteIds=Object.keys(shallowJson);
+    var localIds=data.map(function(r){return String(r._id);});
+    var added=remoteIds.filter(function(id){return !localIds.includes(id);});
+    var removed=localIds.filter(function(id){return !remoteIds.includes(id);});
+    var changed=[];
+    // For existing sessions, fetch full data to detect changes
+    // Only fetch sessions we don't have or that might have changed
+    // Use a lightweight approach: fetch all and compare
+    if(added.length||removed.length){
+      // Structural change — do a full reload
+      var fullRes=await fetch(FIREBASE_SESSIONS+'.json?t='+Date.now());
+      if(!fullRes.ok)return;
+      var fullJson=await fullRes.json();
+      var sessions=fullJson&&typeof fullJson==='object'&&!Array.isArray(fullJson)
+        ?Object.values(fullJson).filter(function(x){return x&&x.date;})
+        :null;
+      if(!sessions||!sessions.length)return;
+      data=sessions;
+      data.forEach(function(r){
+        if(r.status==='keep')r.status='scheduled';
+        if(r.status==='ongoing')r.status='in-progress';
+        if(r.status==='no-capacity'&&(!r.trainer||r.trainer==='TBC')&&!r._manualStatus)r.status='scheduled';
+        if(!r._id)r._id=_nextId++;
+      });
+      normalizeAllDates();
+      refreshCapacity();autoUpdateStatuses(true);updateStats();renderTable();refreshActive();
+      setSyncStatus('synced','Live update '+new Date().toLocaleTimeString('en-GB'));
+      console.log('Realtime: '+added.length+' added, '+removed.length+' removed');
+    }
   }catch(e){}
 }
 setInterval(pollCloud,15000);
