@@ -1364,10 +1364,9 @@ function saveAdd(){
 
   closeAddModal();
   updateStats();
-  renderTable();       // ✅ this updates health automatically
+  renderTable();
   refreshActive();
-  saveToCloud();
-
+  saveSession(rec._id); // save only this new session
   toast('Session added: ' + day + ' ' + date);
 }
 
@@ -1732,7 +1731,12 @@ function saveEditExpert(){
     if((r[_editExpertField]||'').trim()===_editExpertOldName){r[_editExpertField]=newName;updated++;}
   });
   closeEditExpertModal();
-  updateStats();renderExperts();renderTable();saveToCloud();
+  updateStats();renderExperts();renderTable();
+  // Save all affected sessions individually
+  data.forEach(function(r){
+    if((r[_editExpertField]||'').trim()===newName){saveSession(r._id);}
+  });
+  saveMeta();
   const msg=updated?newName+' updated ('+updated+' session'+(updated!==1?'s':'')+' reassigned)':newName+' updated';
   toast(msg);
 }
@@ -2113,6 +2117,15 @@ async function loadFromCloud(){
     if(!sessions||sessions.length<5){
       console.log('Firebase empty/sparse, pushing embedded data');
       saveToCloud();
+      return;
+    }
+    // If data came from old flat format (json.sessions array), migrate to new format
+    if(json&&json.sessions&&Array.isArray(json.sessions)){
+      console.log('Migrating from old Firebase format to per-session format');
+      data=sessions;
+      data.forEach(function(r){if(!r._id)r._id=_nextId++;});
+      normalizeAllDates();
+      saveToCloud(); // full save in new format
       return;
     }
     const cancelRatio=sessions.filter(function(r){return r.status==='cancelled';}).length/sessions.length;
