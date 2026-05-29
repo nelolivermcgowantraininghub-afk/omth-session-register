@@ -1996,44 +1996,74 @@ function restoreEmbedded(){
   toast('Restored '+data.length+' sessions from built-in data');
 }
 
-// Save a single session by its _id (field-level sync — no conflicts)
+// Save a single session — read Firebase, update just this session, write back
 async function saveSession(sessionId){
   const r=data.find(function(x){return x._id===sessionId;});
   if(!r)return;
   try{
     setSyncStatus('syncing','Syncing…');
-    const url=FIREBASE_SESSIONS+'/'+sessionId+'.json';
-    const res=await fetch(url,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(r)});
-    if(!res.ok)throw new Error();
+    // Read current cloud state
+    const getRes=await fetch(FIREBASE_URL);
+    var cloudData={sessions:[],autismExperts:AUTISM_EXPERTS,ldExperts:LD_EXPERTS,
+      extraTrainers:EXTRA_TRAINERS,capacityRules:{jodyMonthly:CAPACITY.JODY_MAX_MONTHLY,
+      biliWeekly:CAPACITY.BILI_MAX_WEEKLY,combinedWeekly:CAPACITY.COMBINED_MAX_WEEKLY,
+      jodyUnavail:CAPACITY.JODY_UNAVAILABLE,biliUnavail:CAPACITY.BILI_UNAVAILABLE}};
+    if(getRes.ok){
+      const existing=await getRes.json();
+      if(existing&&Array.isArray(existing.sessions)) cloudData=existing;
+    }
+    // Update just this session in the array
+    const idx=cloudData.sessions.findIndex(function(x){return x._id===sessionId;});
+    if(idx>=0) cloudData.sessions[idx]=r;
+    else cloudData.sessions.push(r);
+    cloudData.lastUpdated=new Date().toISOString();
+    // Write back
+    const putRes=await fetch(FIREBASE_URL,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(cloudData)});
+    if(!putRes.ok)throw new Error();
     setSyncStatus('synced','Synced ✓ '+new Date().toLocaleTimeString('en-GB'));
   }catch(e){setSyncStatus('error','Sync failed');console.warn('saveSession failed',e);}
 }
-// Delete a single session from Firebase
+
+// Delete a single session — read Firebase, remove this session, write back
 async function deleteSessionFromCloud(sessionId){
   try{
-    await fetch(FIREBASE_SESSIONS+'/'+sessionId+'.json',{method:'DELETE'});
+    const getRes=await fetch(FIREBASE_URL);
+    if(!getRes.ok)return;
+    const cloudData=await getRes.json();
+    if(!cloudData||!Array.isArray(cloudData.sessions))return;
+    cloudData.sessions=cloudData.sessions.filter(function(x){return x._id!==sessionId;});
+    cloudData.lastUpdated=new Date().toISOString();
+    await fetch(FIREBASE_URL,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(cloudData)});
   }catch(e){console.warn('deleteSession failed',e);}
 }
-// Save just meta (experts, capacity rules)
+
+// Save just meta — read Firebase, update meta fields, write back
 async function saveMeta(){
   try{
-    const meta={autismExperts:AUTISM_EXPERTS,ldExperts:LD_EXPERTS,extraTrainers:EXTRA_TRAINERS,
-      capacityRules:{jodyMonthly:CAPACITY.JODY_MAX_MONTHLY,biliWeekly:CAPACITY.BILI_MAX_WEEKLY,
-        combinedWeekly:CAPACITY.COMBINED_MAX_WEEKLY,jodyUnavail:CAPACITY.JODY_UNAVAILABLE,
-        biliUnavail:CAPACITY.BILI_UNAVAILABLE},lastUpdated:new Date().toISOString()};
-    await fetch(FIREBASE_META,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(meta)});
+    const getRes=await fetch(FIREBASE_URL);
+    var cloudData={sessions:data};
+    if(getRes.ok){const existing=await getRes.json();if(existing&&existing.sessions)cloudData=existing;}
+    cloudData.autismExperts=AUTISM_EXPERTS;
+    cloudData.ldExperts=LD_EXPERTS;
+    cloudData.extraTrainers=EXTRA_TRAINERS;
+    cloudData.capacityRules={jodyMonthly:CAPACITY.JODY_MAX_MONTHLY,biliWeekly:CAPACITY.BILI_MAX_WEEKLY,
+      combinedWeekly:CAPACITY.COMBINED_MAX_WEEKLY,jodyUnavail:CAPACITY.JODY_UNAVAILABLE,biliUnavail:CAPACITY.BILI_UNAVAILABLE};
+    cloudData.lastUpdated=new Date().toISOString();
+    await fetch(FIREBASE_URL,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(cloudData)});
   }catch(e){console.warn('saveMeta failed',e);}
 }
-// Full save — used for bulk ops (import, restore). Saves all sessions + meta.
+
+// Full save — replaces everything (import, restore)
 async function saveToCloud(){
   setSyncStatus('syncing','Syncing…');
   try{
-    const sessionsObj={};
-    data.forEach(function(r){if(r._id)sessionsObj[r._id]=r;});
-    const res=await fetch(FIREBASE_SESSIONS+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(sessionsObj)});
+    const payload={sessions:data,autismExperts:AUTISM_EXPERTS,ldExperts:LD_EXPERTS,
+      extraTrainers:EXTRA_TRAINERS,capacityRules:{jodyMonthly:CAPACITY.JODY_MAX_MONTHLY,
+      biliWeekly:CAPACITY.BILI_MAX_WEEKLY,combinedWeekly:CAPACITY.COMBINED_MAX_WEEKLY,
+      jodyUnavail:CAPACITY.JODY_UNAVAILABLE,biliUnavail:CAPACITY.BILI_UNAVAILABLE},
+      lastUpdated:new Date().toISOString()};
+    const res=await fetch(FIREBASE_URL,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     if(!res.ok)throw new Error();
-    await saveMeta();
-    _lastLoadedTs=new Date().toISOString();
     setSyncStatus('synced','Synced ✓ '+new Date().toLocaleTimeString('en-GB'));
     syncToSheets();
   }catch(e){setSyncStatus('error','Sync failed');toast('Sync failed','error');console.warn(e);}
@@ -2042,7 +2072,7 @@ async function loadFromCloud(){
   setSyncStatus('syncing','Loading…');
   try{
     // Load sessions (now stored as object keyed by ID)
-    const res=await fetch(FIREBASE_SESSIONS+'.json');
+    const res=await fetch(FIREBASE_URL);
     if(!res.ok)throw new Error('HTTP '+res.status);
     const json=await res.json();
     // Handle both new format (object) and old format (array in .sessions)
@@ -2108,7 +2138,7 @@ async function loadFromCloud(){
 
   // Try Firebase — only use it if it has valid non-corrupted data
   try{
-    const res=await fetch(FIREBASE_SESSIONS+'.json');
+    const res=await fetch(FIREBASE_URL);
     if(!res.ok)throw new Error('HTTP '+res.status);
     const json=await res.json();
     // Handle both old format (json.sessions array) and new format (object keyed by ID)
@@ -2170,28 +2200,14 @@ var _sessionSnapshots={};
 async function pollCloud(){
   try{
     // Fetch just the sessions object to detect per-session changes
-    var res=await fetch(FIREBASE_SESSIONS+'.json?shallow=true&t='+Date.now());
+    var res=await fetch(FIREBASE_URL+'?t='+Date.now());
     if(!res.ok)return;
-    var shallowJson=await res.json();
-    if(!shallowJson||typeof shallowJson!=='object')return;
-    // shallow=true returns {id: true} — compare keys to detect adds/deletes
-    var remoteIds=Object.keys(shallowJson);
-    var localIds=data.map(function(r){return String(r._id);});
-    var added=remoteIds.filter(function(id){return !localIds.includes(id);});
-    var removed=localIds.filter(function(id){return !remoteIds.includes(id);});
-    var changed=[];
-    // For existing sessions, fetch full data to detect changes
-    // Only fetch sessions we don't have or that might have changed
-    // Use a lightweight approach: fetch all and compare
-    if(added.length||removed.length){
-      // Structural change — do a full reload
-      var fullRes=await fetch(FIREBASE_SESSIONS+'.json?t='+Date.now());
-      if(!fullRes.ok)return;
-      var fullJson=await fullRes.json();
-      var sessions=fullJson&&typeof fullJson==='object'&&!Array.isArray(fullJson)
-        ?Object.values(fullJson).filter(function(x){return x&&x.date;})
-        :null;
-      if(!sessions||!sessions.length)return;
+    var json=await res.json();
+    var ts=(json&&json.lastUpdated)||'';
+    if(ts&&ts!==_lastCloudTs&&_lastCloudTs!==''){
+      _lastCloudTs=ts;
+      var sessions=json.sessions;
+      if(!Array.isArray(sessions)||!sessions.length)return;
       data=sessions;
       data.forEach(function(r){
         if(r.status==='keep')r.status='scheduled';
@@ -2200,10 +2216,12 @@ async function pollCloud(){
         if(!r._id)r._id=_nextId++;
       });
       normalizeAllDates();
+      if(Array.isArray(json.autismExperts))AUTISM_EXPERTS=json.autismExperts;
+      if(Array.isArray(json.ldExperts))LD_EXPERTS=json.ldExperts;
       refreshCapacity();autoUpdateStatuses(true);updateStats();renderTable();refreshActive();
       setSyncStatus('synced','Live update '+new Date().toLocaleTimeString('en-GB'));
-      console.log('Realtime: '+added.length+' added, '+removed.length+' removed');
-    }
+      console.log('Realtime update received');
+    } else if(!_lastCloudTs){_lastCloudTs=ts;}
   }catch(e){}
 }
 setInterval(pollCloud,15000);
